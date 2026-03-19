@@ -1,0 +1,6 @@
+@SistemaDeDisciplinas_HostAddress = http://localhost:5071
+
+GET {{SistemaDeDisciplinas_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

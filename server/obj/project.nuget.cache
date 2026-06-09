@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "9lGjFpUSzCI=",
+  "dgSpecHash": "Ja6L3BEL1vk=",
   "success": true,
-  "projectFilePath": "C:\\Users\\dti-\\Documents\\Projetos\\SistemaDeDisciplinas\\SistemaDeDisciplinas.csproj",
+  "projectFilePath": "C:\\Projetos\\StudyOrganizer\\server\\SistemaDeDisciplinas.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\dti-\\.nuget\\packages\\humanizer.core\\2.14.1\\humanizer.core.2.14.1.nupkg.sha512",
     "C:\\Users\\dti-\\.nuget\\packages\\microsoft.aspnetcore.openapi\\10.0.3\\microsoft.aspnetcore.openapi.10.0.3.nupkg.sha512",

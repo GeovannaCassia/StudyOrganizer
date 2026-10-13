@@ -3,14 +3,18 @@ namespace StudyTopics.Services;
 using StudyTopics.Models;
 using StudyTopics.Repositories.Interface;
 using StudyOrganizer.DTOs.StudyTopics;
+using StudyOrganizer.Exceptions;
+using Subject.Repositories.Interface;
 
 public class StudyTopicsService
 {
     private readonly IStudyTopicsRepository _repository;
+    private readonly ISubjectRepository _subjectRepository;
 
-    public StudyTopicsService(IStudyTopicsRepository repository)
+    public StudyTopicsService(IStudyTopicsRepository repository, ISubjectRepository subjectRepository)
     {
         _repository = repository;
+        _subjectRepository = subjectRepository;
     }
 
     public async Task <IEnumerable<ResponseStudyTopicsDTO>> GetAlltopicsAsync()
@@ -61,6 +65,9 @@ public class StudyTopicsService
     {
         var topic = await _repository.GetByIdAsync(id);
 
+        if (topic == null)
+            throw new NotFoundException("Tópico não encontrado.");
+
         var studyTopicDTO = new ResponseStudyTopicsDTO
         {
             Id = topic.Id,
@@ -85,7 +92,12 @@ public class StudyTopicsService
 
         if (string.IsNullOrWhiteSpace(topic.Title))
         {
-            throw new  Exception("O titulo do topico é obrigatório.");
+            throw new BusinessRuleException("O título do tópico é obrigatório.");
+        }
+
+        if (await _subjectRepository.GetByIdAsync(dto.SubjectId) == null)
+        {
+            throw new BusinessRuleException("A disciplina informada não existe.");
         }
 
         await _repository.AddAsync(topic);
@@ -97,7 +109,10 @@ public class StudyTopicsService
         var topic = await _repository.GetByIdAsync(id);
         
         if(topic == null)
-            throw new Exception("Topico não encontrado");
+            throw new NotFoundException("Tópico não encontrado.");
+
+        if (string.IsNullOrWhiteSpace(dto.Title))
+            throw new BusinessRuleException("O título do tópico é obrigatório.");
 
         topic.Title = dto.Title;
         topic.Description = dto.Description;
@@ -111,7 +126,7 @@ public class StudyTopicsService
          var topic = await _repository.GetByIdAsync(id);
 
         if (topic == null)
-            throw new Exception("Topic not found");
+            throw new NotFoundException("Tópico não encontrado.");
 
         topic.IsCompleted = true;
 

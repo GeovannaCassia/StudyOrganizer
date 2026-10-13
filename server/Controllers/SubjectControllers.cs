@@ -3,7 +3,6 @@ namespace Subject.Controllers;
 using Microsoft.AspNetCore.Mvc;
 using Subject.Services;
 using SubjectProgress.Services;
-using Subject.Models;
 using StudyOrganizer.DTOs.Subjects;
 
 [ApiController]
@@ -57,9 +56,9 @@ public class SubjectController : ControllerBase
     }
 
     [HttpPatch("{id}")]
-    public async Task<IActionResult> UpdateSubject(Subject subject)
+    public async Task<IActionResult> UpdateSubject(int id, UpdateSubjectDTO dto)
     {
-        await _service.UpdateSubjectAsync(subject);
+        await _service.UpdateSubjectAsync(id, dto);
         return Ok();
     }
 

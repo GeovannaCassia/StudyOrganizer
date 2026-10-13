@@ -3,7 +3,7 @@ namespace Subject.Services;
 using Subject.Models;
 using Subject.Repositories.Interface;
 using StudyOrganizer.DTOs.Subjects;
-using Microsoft.AspNetCore.Http.HttpResults;
+using StudyOrganizer.Exceptions;
 
 public class SubjectService
 {
@@ -22,7 +22,7 @@ public class SubjectService
         {
             Id = subj.Id,
             Name = subj.Name,
-            Subscription = subj.Subscription,
+            Description = subj.Description,
             CreatedAt = subj.CreatedAt
         }).ToList();
     }
@@ -31,11 +31,14 @@ public class SubjectService
     {
         var subject = await _repository.GetByIdAsync(id);
 
+        if (subject == null)
+            throw new NotFoundException("Disciplina não encontrada.");
+
         var subjectDTO = new ResponseSubjectDTO
         {
             Id = subject.Id,
-            Name = subject?.Name,
-            Subscription = subject?.Subscription,
+            Name = subject.Name,
+            Description = subject.Description,
             CreatedAt = subject.CreatedAt
         };
 
@@ -44,43 +47,51 @@ public class SubjectService
 
     public async Task<Subject> CreateSubjectAsync(CreateSubjectDTO dto)
     {
+        var name = await ValidateNameAsync(dto.Name);
+
         var subject = new Subject
         {
-            Name = dto.Name,
-            Subscription = dto.Subscription
+            Name = name,
+            Description = dto.Description
         };
-
-        if (string.IsNullOrWhiteSpace(subject.Name))
-        {
-            throw new Exception("O nome da disciplina é obrigatorio.");
-        }
-        
-        var subjects = await _repository.GetAllAsync();
-
-        if(subjects.Any(subj => subj.Name == subject.Name))
-        {
-            throw new Exception("O nome da disciplina já existe e não pode ser duplicado.");
-        }
 
         await _repository.AddAsync(subject);
         return subject;
     }
 
-    public async Task UpdateSubjectAsync(Subject subject)
+    public async Task UpdateSubjectAsync(int id, UpdateSubjectDTO dto)
     {
-        var existSubject =  await _repository.GetByIdAsync(subject.Id);
+        var subject = await _repository.GetByIdAsync(id);
 
-        if(existSubject == null)
-            throw new Exception("Subject não foi encontrado.");
+        if (subject == null)
+            throw new NotFoundException("Disciplina não encontrada.");
 
-        if(subject.Id <= 0)
-            throw new Exception("Id inválido");
-        
+        subject.Name = await ValidateNameAsync(dto.Name, id);
+        subject.Description = dto.Description;
+
         await _repository.UpdateAsync(subject);
     }
 
     public async Task DeleteSubjectAsync(int id)
     {
         await _repository.DeleteAsync(id);
+    }
+
+    // Nome obrigatório e único (sem diferenciar maiúsculas); ignora a própria disciplina na edição
+    private async Task<string> ValidateNameAsync(string? name, int? ignoreId = null)
+    {
+        if (string.IsNullOrWhiteSpace(name))
+            throw new BusinessRuleException("O nome da disciplina é obrigatório.");
+
+        var trimmedName = name.Trim();
+        var subjects = await _repository.GetAllAsync();
+
+        if (subjects.Any(subj => subj.Id != ignoreId &&
+                                 string.Equals(subj.Name?.Trim(), trimmedName, StringComparison.OrdinalIgnoreCase)))
+        {
+            throw new BusinessRuleException("Já existe uma disciplina com esse nome.");
+        }
+
+        return trimmedName;
     }
 }

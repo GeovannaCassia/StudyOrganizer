@@ -4,15 +4,18 @@ using Microsoft.AspNetCore.Identity;
 using StudySession.Models;
 using StudySession.Repositories.Interface;
 using StudyOrganizer.DTOs.StudySession;
-using Microsoft.AspNetCore.Http.HttpResults;
+using StudyOrganizer.Exceptions;
+using Subject.Repositories.Interface;
 
 public class StudySessionService
 {
     private readonly IStudySessionRepository _repository;
+    private readonly ISubjectRepository _subjectRepository;
 
-    public StudySessionService(IStudySessionRepository repository)
+    public StudySessionService(IStudySessionRepository repository, ISubjectRepository subjectRepository)
     {
         _repository = repository;
+        _subjectRepository = subjectRepository;
     }
 
     public async Task<IEnumerable<ResponseStudySessionDTO>> GetAllSessionsAsync()
@@ -37,7 +40,6 @@ public class StudySessionService
     public async Task<IEnumerable<ResponseStudySessionDTO?>> GetSessionsBySubjectAsync(int subjectId)
     {
         var sessions = await _repository.GetBySubjectAsync(subjectId);
-        Console.WriteLine(sessions);
 
         return sessions.Select(session => new ResponseStudySessionDTO
         {
@@ -56,6 +58,12 @@ public class StudySessionService
 
     public async Task<StudySession> CreateStudySession(CreateStudySessionDTO dto)
     {
+        if (dto.EndTime <= dto.StartTime)
+            throw new BusinessRuleException("O horário de fim deve ser posterior ao horário de início.");
+
+        if (await _subjectRepository.GetByIdAsync(dto.SubjectId) == null)
+            throw new BusinessRuleException("A disciplina informada não existe.");
+
         var session = new StudySession
         {
             StartTime = dto.StartTime,

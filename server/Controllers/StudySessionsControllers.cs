@@ -36,9 +36,9 @@ public class StudySessionController : ControllerBase
     }
 
     [HttpGet("subjectId/{id}")]
-    public async Task<IActionResult> GetSessionsBySubjectId(int SubjectId)
+    public async Task<IActionResult> GetSessionsBySubjectId(int id)
     {
-        var sessions = await _service.GetSessionsBySubjectAsync(SubjectId);
+        var sessions = await _service.GetSessionsBySubjectAsync(id);
 
         if(sessions == null)
             return NotFound();
@@ -47,9 +47,9 @@ public class StudySessionController : ControllerBase
     }
 
     [HttpGet("subjectId/TotalTime/{id}")]
-    public async Task<IActionResult> GetTotalTimeBySubjectId(int SubjectId)
+    public async Task<IActionResult> GetTotalTimeBySubjectId(int id)
     {
-        var totalTime = await _service.GetTotalStudySessionBySubjectAsync(SubjectId);
+        var totalTime = await _service.GetTotalStudySessionBySubjectAsync(id);
 
         return Ok(totalTime);
     }

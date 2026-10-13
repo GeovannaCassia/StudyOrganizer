@@ -48,12 +48,12 @@ dotnet ef database update
 dotnet run
 ```
 
-A aplicação estará disponível em `https://localhost:5001` (HTTPS) ou `http://localhost:5000` (HTTP).
+A aplicação estará disponível em `http://localhost:5071` (perfil `http`) ou `https://localhost:7268` (perfil `https`), conforme `Properties/launchSettings.json`.
 
 ### 5. Acessar a Documentação Swagger
 Abra seu navegador e acesse:
 ```
-https://localhost:5001/swagger
+http://localhost:5071/swagger
 ```
 
 ## 📁 Estrutura do Projeto
@@ -74,6 +74,8 @@ SistemaDeDisciplinas/
 │   └── subject/
 ├── Data/                     # Contexto do Entity Framework
 │   └── AppDbContext.cs
+├── Exceptions/               # Exceções da aplicação (NotFound, BusinessRule)
+├── Middlewares/              # Tratamento global de erros
 ├── Repositories/             # Padrão Repository
 │   ├── Interface/
 │   └── Implementations/
@@ -94,7 +96,7 @@ public class Subject
 {
     public int Id { get; set; }
     public string? Name { get; set; }
-    public string? Subscription { get; set; }
+    public string? Description { get; set; }
     public DateTime CreatedAt { get; set; }
 }
 ```
@@ -128,24 +130,39 @@ public class StudySession
 ## 🔌 Endpoints da API
 
 ### Disciplinas (Subject)
-- `GET /api/subject` - Listar todas as disciplinas
-- `GET /api/subject/{id}` - Obter disciplina por ID
-- `POST /api/subject` - Criar nova disciplina
-- `PUT /api/subject/{id}` - Atualizar disciplina
-- `DELETE /api/subject/{id}` - Remover disciplina
+- `GET /api/Subject` - Listar todas as disciplinas
+- `GET /api/Subject/{id}` - Obter disciplina por ID
+- `GET /api/Subject/{id}/progress` - Progresso da disciplina (`{ progress: { subjectName, totalTopics, totalTopicsCompleted, progress } }`; 0 quando não há tópicos)
+- `POST /api/Subject` - Criar nova disciplina (`{ name, description }`)
+- `PATCH /api/Subject/{id}` - Atualizar disciplina (`{ name, description }`)
+- `DELETE /api/Subject/{id}` - Remover disciplina (remove em cascata os tópicos e as sessões)
 
 ### Tópicos de Estudo (StudyTopics)
-- `GET /api/study-topics` - Listar todos os tópicos
-- `GET /api/study-topics/{id}` - Obter tópico por ID
-- `POST /api/study-topics` - Criar novo tópico
-- `PUT /api/study-topics/{id}` - Atualizar tópico
-- `DELETE /api/study-topics/{id}` - Remover tópico
+- `GET /api/StudyTopics` - Listar todos os tópicos
+- `GET /api/StudyTopics/{id}` - Obter tópico por ID
+- `GET /api/StudyTopics/subjectId/{id}` - Listar tópicos de uma disciplina
+- `GET /api/StudyTopics/subjectId/{id}/completed` - Listar tópicos concluídos de uma disciplina
+- `POST /api/StudyTopics` - Criar novo tópico (`{ title, description, isCompleted, subjectId }`)
+- `PATCH /api/StudyTopics/{id}` - Atualizar tópico (`{ title, description, isCompleted }`)
+- `PATCH /api/StudyTopics/completed/{id}` - Marcar tópico como concluído
+- `DELETE /api/StudyTopics/{id}` - Remover tópico
 
-### Sessões de Estudo (StudySessions)
-- `GET /api/study-sessions` - Listar todas as sessões
-- `GET /api/study-sessions/{id}` - Obter sessão por ID
-- `POST /api/study-sessions` - Criar nova sessão
-- `DELETE /api/study-sessions/{id}` - Remover sessão
+### Sessões de Estudo (StudySession)
+- `GET /api/StudySession` - Listar todas as sessões
+- `GET /api/StudySession/TotalTime` - Tempo total de estudo (TimeSpan, ex.: `"01:30:00"`)
+- `GET /api/StudySession/subjectId/{id}` - Listar sessões de uma disciplina
+- `GET /api/StudySession/subjectId/TotalTime/{id}` - Tempo total de estudo de uma disciplina
+- `POST /api/StudySession` - Criar nova sessão (`{ startTime, endTime, subjectId }`, datas em UTC)
+- `DELETE /api/StudySession/{id}` - Remover sessão
+
+### Respostas de erro
+Os erros da aplicação são devolvidos no formato `{ "message": "..." }`:
+- `404 Not Found` - recurso inexistente (ex.: `"Disciplina não encontrada."`)
+- `400 Bad Request` - regra de negócio violada (ex.: `"Já existe uma disciplina com esse nome."`, `"O horário de fim deve ser posterior ao horário de início."`)
+- `500 Internal Server Error` - erro inesperado (detalhes apenas no log do servidor)
+
+### Datas
+Todas as datas são gravadas e devolvidas em UTC (ISO 8601 terminando em `Z`). A conversão para o horário local fica a cargo do cliente.
 
 ## 💾 Banco de Dados
 
@@ -159,31 +176,32 @@ study.db
 As migrações do Entity Framework estão em `Migrations/`:
 - `Version1.0` - Primeira versão estável
 - `Version2.0` - Melhorias na estrutura
-- `Version3.0` - Versão atual
+- `Version3.0` - Ajustes de estrutura
+- `RenameSubscriptionToDescription` - Renomeia o campo `Subscription` da disciplina para `Description` (versão atual)
 
 ## 🔐 Segurança
 
 A aplicação implementa:
 - HTTPS redirection (segurança em trânsito)
 - Entity Framework Core (proteção contra SQL Injection)
-- Validações de entrada em DTOs
+- Validações de regras de negócio nos services, com respostas de erro padronizadas
 
 ## 📝 Como Usar
 
 ### Exemplo: Criar uma Disciplina
 ```bash
-POST /api/subject
+POST /api/Subject
 Content-Type: application/json
 
 {
   "name": "Matemática",
-  "subscription": "Disciplina obrigatória"
+  "description": "Disciplina obrigatória"
 }
 ```
 
 ### Exemplo: Criar um Tópico de Estudo
 ```bash
-POST /api/study-topics
+POST /api/StudyTopics
 Content-Type: application/json
 
 {
@@ -195,7 +213,7 @@ Content-Type: application/json
 
 ### Exemplo: Registrar uma Sessão de Estudo
 ```bash
-POST /api/study-sessions
+POST /api/StudySession
 Content-Type: application/json
 
 {

@@ -17,20 +17,23 @@ public class SubjectProgressService
 
     public async Task<ResponseProgressDTO> CalculateProgress(int subjectId)
     {
+        var subject = await _subjectService.GetSubjectById(subjectId);
         var topics = await _topicsService.GetTopicsBySubjectIdAsync(subjectId);
         var completedTopics = await _topicsService.GetTopicsCompletdBySubjectIdAsync(subjectId);
-        var subject = await _subjectService.GetSubjectById(subjectId);
 
-        var progress = Math.Round(
-            (double)completedTopics.Count() / topics.Count() * 100,
-            2
-        );
+        var totalTopics = topics.Count();
+        var totalCompleted = completedTopics.Count();
+
+        // Sem tópicos, o progresso é 0 (evita divisão por zero)
+        var progress = totalTopics == 0
+            ? 0
+            : Math.Round((double)totalCompleted / totalTopics * 100, 2);
 
         var subjectProgress = new ResponseProgressDTO
         {
-            SubjectName = subject.Name,
-            TotalTopics = topics.Count(),
-            TotalTopicsCompleted = completedTopics.Count(),
+            SubjectName = subject.Name ?? string.Empty,
+            TotalTopics = totalTopics,
+            TotalTopicsCompleted = totalCompleted,
             Progress = progress
         };
 

@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using StudyOrganizer.Data;
+using StudyOrganizer.Middlewares;
 using StudySession.Repositories.Implementations;
 using StudySession.Repositories.Interface;
 using StudySession.Services;
@@ -38,6 +39,8 @@ if (app.Environment.IsDevelopment())
 {
     app.MapOpenApi();
 }
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseSwagger();
 app.UseSwaggerUI();

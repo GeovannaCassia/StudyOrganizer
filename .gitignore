@@ -1,0 +1,43 @@
+# ===== Backend (.NET) =====
+# Saídas de compilação
+[Bb]in/
+[Oo]bj/
+publish/
+[Dd]ebug/
+[Rr]elease/
+*.nupkg
+
+# Banco de dados SQLite local (recriado com `dotnet ef database update`)
+*.db
+*.db-shm
+*.db-wal
+*.db.bak
+
+# Arquivos de usuário do Visual Studio / Rider
+.vs/
+*.user
+*.suo
+*.userprefs
+.idea/
+
+# Configurações locais com segredos
+appsettings.*.local.json
+
+# ===== Frontend =====
+# (regras específicas ficam em client/.gitignore)
+node_modules/
+
+# ===== Ferramentas locais =====
+.claude/
+
+# ===== Ambiente =====
+.env
+.env.*.local
+
+# Sistema operacional
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log

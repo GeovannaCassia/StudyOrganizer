@@ -1,6 +1,140 @@
 @SistemaDeDisciplinas_HostAddress = http://localhost:5071
+@api = {{SistemaDeDisciplinas_HostAddress}}/api
 
-GET {{SistemaDeDisciplinas_HostAddress}}/weatherforecast/
+# Ajuste os ids abaixo conforme os dados do seu banco
+@subjectId = 1
+@topicId = 1
+@sessionId = 1
+
+### ===== Disciplinas =====
+
+### Listar disciplinas
+GET {{api}}/Subject
 Accept: application/json
 
-###
+### Obter disciplina por id
+GET {{api}}/Subject/{{subjectId}}
+Accept: application/json
+
+### Progresso da disciplina
+GET {{api}}/Subject/{{subjectId}}/progress
+Accept: application/json
+
+### Criar disciplina
+POST {{api}}/Subject
+Content-Type: application/json
+
+{
+  "name": "Matemática",
+  "description": "Disciplina obrigatória"
+}
+
+### Atualizar disciplina
+PATCH {{api}}/Subject/{{subjectId}}
+Content-Type: application/json
+
+{
+  "name": "Matemática Básica",
+  "description": "Revisão do ensino médio"
+}
+
+### Remover disciplina (remove em cascata tópicos e sessões)
+DELETE {{api}}/Subject/{{subjectId}}
+
+### Erro 404: disciplina inexistente
+GET {{api}}/Subject/999999
+Accept: application/json
+
+### Erro 400: nome obrigatório
+POST {{api}}/Subject
+Content-Type: application/json
+
+{
+  "name": ""
+}
+
+### ===== Tópicos =====
+
+### Listar todos os tópicos
+GET {{api}}/StudyTopics
+Accept: application/json
+
+### Obter tópico por id
+GET {{api}}/StudyTopics/{{topicId}}
+Accept: application/json
+
+### Listar tópicos de uma disciplina
+GET {{api}}/StudyTopics/subjectId/{{subjectId}}
+Accept: application/json
+
+### Listar tópicos concluídos de uma disciplina
+GET {{api}}/StudyTopics/subjectId/{{subjectId}}/completed
+Accept: application/json
+
+### Criar tópico
+POST {{api}}/StudyTopics
+Content-Type: application/json
+
+{
+  "title": "Álgebra",
+  "description": "Introdução a Álgebra Linear",
+  "isCompleted": false,
+  "subjectId": {{subjectId}}
+}
+
+### Atualizar tópico (também usado para desmarcar como concluído)
+PATCH {{api}}/StudyTopics/{{topicId}}
+Content-Type: application/json
+
+{
+  "title": "Álgebra",
+  "description": "Introdução a Álgebra Linear",
+  "isCompleted": false
+}
+
+### Marcar tópico como concluído
+PATCH {{api}}/StudyTopics/completed/{{topicId}}
+
+### Remover tópico
+DELETE {{api}}/StudyTopics/{{topicId}}
+
+### ===== Sessões =====
+
+### Listar todas as sessões
+GET {{api}}/StudySession
+Accept: application/json
+
+### Tempo total de estudo
+GET {{api}}/StudySession/TotalTime
+Accept: application/json
+
+### Listar sessões de uma disciplina
+GET {{api}}/StudySession/subjectId/{{subjectId}}
+Accept: application/json
+
+### Tempo total de estudo de uma disciplina
+GET {{api}}/StudySession/subjectId/TotalTime/{{subjectId}}
+Accept: application/json
+
+### Registrar sessão (datas em UTC)
+POST {{api}}/StudySession
+Content-Type: application/json
+
+{
+  "startTime": "2026-10-15T13:00:00Z",
+  "endTime": "2026-10-15T14:30:00Z",
+  "subjectId": {{subjectId}}
+}
+
+### Erro 400: fim antes do início
+POST {{api}}/StudySession
+Content-Type: application/json
+
+{
+  "startTime": "2026-10-15T15:00:00Z",
+  "endTime": "2026-10-15T14:00:00Z",
+  "subjectId": {{subjectId}}
+}
+
+### Remover sessão
+DELETE {{api}}/StudySession/{{sessionId}}

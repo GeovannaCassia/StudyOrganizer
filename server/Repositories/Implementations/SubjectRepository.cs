@@ -47,4 +47,14 @@ public class SubjectRepository : ISubjectRepository
             await _context.SaveChangesAsync();
         }
     }
+
+    // Atribui ao usuário as disciplinas sem dono (criadas antes do login existir).
+    // Ignora o filtro por usuário, que esconderia justamente essas disciplinas.
+    public async Task AssignOrphansToUserAsync(int userId)
+    {
+        await _context.Subject
+            .IgnoreQueryFilters()
+            .Where(subject => subject.UserId == null)
+            .ExecuteUpdateAsync(setters => setters.SetProperty(subject => subject.UserId, (int?)userId));
+    }
 }

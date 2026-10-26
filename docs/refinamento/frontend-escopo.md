@@ -1,5 +1,6 @@
 # Escopo do Frontend — Study Organizer
 > Refinamento realizado em 13/10/2026. Fonte de verdade da API: `server/` (commit `ffeec24`).
+> Revisado em 26/10/2026: inclusão de login com JWT (seções 2, 3, 4.0, 6, 7, 9 e 11).
 
 ## 1. Visão e objetivo da entrega
 
@@ -9,7 +10,7 @@ O MVP cobre o cadastro de disciplinas, tópicos e sessões, o progresso por disc
 
 ## 2. Restrições e premissas
 
-- **Uma única pessoa usuária, sem login.** O backend não tem autenticação nem conceito de usuário.
+- **Uma única conta, com login.** *(Revisado em 26/10/2026 — antes: "sem login".)* O backend tem autenticação JWT; o cadastro só fica aberto enquanto não existe nenhuma conta, e a primeira conta assume as disciplinas já existentes. Os dados são isolados por usuário.
 - **Layout responsivo, pensado primeiro para desktop.**
 - **Protótipos visuais serão criados depois deste refinamento**, antes de implementar as telas.
 - **Stack já definida:** Vite 8, React 19, TypeScript, Tailwind CSS v4, React Router 7, Axios, React Hook Form, Zod, lucide-react, react-hot-toast e date-fns.
@@ -20,17 +21,43 @@ O MVP cobre o cadastro de disciplinas, tópicos e sessões, o progresso por disc
 
 | Rota | Tela | Objetivo | Endpoints usados |
 |---|---|---|---|
+| `/login` | Entrar *(pública)* | Entrar com e-mail e senha | `GET /api/Auth/status`, `POST /api/Auth/login` |
+| `/cadastro` | Criar conta *(pública)* | Criar a única conta; só acessível com o cadastro aberto | `GET /api/Auth/status`, `POST /api/Auth/register` |
 | `/` | Dashboard | Visão geral: tempo estudado, progresso, sessões recentes e gráfico dos últimos 7 dias | `GET /api/Subject`, `GET /api/Subject/{id}/progress`, `GET /api/StudySession`, `GET /api/StudySession/TotalTime` |
 | `/disciplinas` | Lista de disciplinas | Ver, criar, editar e excluir disciplinas | `GET /api/Subject`, `GET /api/Subject/{id}/progress`, `GET /api/StudySession/subjectId/TotalTime/{id}`, `POST`/`PATCH`/`DELETE /api/Subject` |
 | `/disciplinas/:id` | Detalhe da disciplina | Gerenciar os tópicos e as sessões de uma disciplina (abas) | `GET /api/Subject/{id}`, `GET /api/Subject/{id}/progress`, `GET /api/StudyTopics/subjectId/{id}`, `GET /api/StudySession/subjectId/{id}`, `GET /api/StudySession/subjectId/TotalTime/{id}`, CRUD de tópicos e sessões |
 | `*` | Não encontrada | Rota inexistente, ou disciplina inexistente (404) | — |
 
+Todas as rotas, exceto `/login` e `/cadastro`, são **protegidas**: sem sessão, redirecionam para `/login`.
+
 **Navegação**
-- Menu lateral fixo com o logo e os itens **Dashboard** e **Disciplinas**, mais o botão para alternar entre tema claro e escuro.
+- Menu lateral fixo com o logo e os itens **Dashboard** e **Disciplinas**, mais o botão para alternar entre tema claro e escuro e, no rodapé do menu, o nome da pessoa logada com o botão **Sair**.
+- `/login` e `/cadastro` não têm menu lateral: cartão centralizado com o logo, no mesmo visual pastel.
 - No celular, o menu fica escondido e abre por um botão no topo.
 - Todos os formulários de criar e editar abrem em **janela modal**.
 
 ## 4. Funcionalidades por módulo
+
+### 4.0 Autenticação *(adicionado em 26/10/2026)*
+
+**A1 — Criar a conta.** Como estudante, quero criar minha conta no primeiro acesso, para que só eu acesse meus estudos.
+- **Dado** que não existe nenhuma conta (`GET /api/Auth/status` → `registrationOpen: true`), **quando** acesso o app, **então** sou levada para `/cadastro`.
+- Formulário com **Nome**, **E-mail**, **Senha** e **Confirmar senha** (com botão de mostrar/ocultar senha).
+- Validações (Zod, iguais às do backend): nome obrigatório (até 80); e-mail válido; senha de 8 a 128 caracteres com letras e números; confirmação igual à senha.
+- **Quando** salvo, **então** a conta é criada, já entro logada e vou para o Dashboard, com as disciplinas que já existiam.
+- **Dado** que o cadastro está fechado, **quando** acesso `/cadastro`, **então** sou redirecionada para `/login`, e a tela de login não mostra o link "Criar conta".
+
+**A2 — Entrar.** Como estudante, quero entrar com e-mail e senha.
+- Campos **E-mail**, **Senha** (mostrar/ocultar) e a caixa **"Lembrar de mim"** (sessão de 30 dias; sem ela, 8 horas e termina ao fechar o navegador).
+- **Dado** e-mail ou senha errados, **então** aparece "E-mail ou senha inválidos." no formulário (sem dizer qual dos dois).
+- **Dado** o limite de tentativas (429), **então** aparece "Muitas tentativas. Aguarde um minuto e tente novamente." e o botão fica desabilitado por 60 s.
+- **Quando** entro, **então** vou para a página que tentei abrir antes do login (ou para o Dashboard).
+
+**A3 — Sessão e saída.**
+- Ao abrir o app, o front chama `GET /api/Auth/me`: 200 → mostra o app; 401 → `/login`. Enquanto verifica, mostra uma tela de carregamento com o logo.
+- **Qualquer** resposta 401 da API limpa o cache do TanStack Query e redireciona para `/login` com o aviso "Sua sessão expirou. Faça login novamente."
+- **Sair** (menu lateral): `POST /api/Auth/logout`, limpa o cache e vai para `/login`.
+- O token **nunca** é lido nem guardado pelo JavaScript (cookie `HttpOnly`); o front guarda só os dados do usuário (`{ id, name, email }`) num contexto.
 
 ### 4.1 Disciplinas
 
@@ -148,7 +175,8 @@ O roxo do logo é adaptado para um **roxo pastel (lavanda)**. As cores de status
 | Papel | Fundo (pastel) | Borda / hover | Texto sobre o fundo | Onde usar |
 |---|---|---|---|---|
 | **Marca / primária** (lavanda) | `#DCD0F7` | `#C5B3F0` | `#3B2A73` | Botões principais ("+ Nova disciplina"), item ativo do menu, links, abas ativas, foco dos campos |
-| Barra de progresso | trilho `#ECE6FB` | preenchimento `#A98FE6` | — | Barras de progresso (com 100%, o preenchimento fica verde pastel) |
+| Barra de progresso | trilho `#ECE6FB` | preenchimento `#8B6DD6` (escuro: `#A98FE6`) | — | Barras de progresso (com 100%, o preenchimento fica verde `#5FBF8F`) |
+| Borda de campos | — | `#9A90B0` (escuro: `#6E6688`) | — | Inputs, textareas e caixas de seleção (contraste mínimo de 3:1 com o fundo) |
 | **Confirmar / sucesso** (verde) | `#D5F2E3` | `#A8E0C2` | `#1E6B47` | Botões Salvar/Confirmar, selo "Concluído", aviso de sucesso, caixa de seleção marcada |
 | **Pendente / atenção** (amarelo) | `#FBF0C9` | `#F2DD8C` | `#7A5A0B` | Selo "Pendente", aviso de sobreposição de sessão, alertas |
 | **Excluir / erro** (vermelho) | `#F9D6D5` | `#F0AEAC` | `#9B2C2C` | Botões Excluir, confirmação de exclusão, erros de formulário, aviso de erro |
@@ -170,11 +198,15 @@ O roxo do logo é adaptado para um **roxo pastel (lavanda)**. As cores de status
 - Os valores exatos podem ser ajustados nos protótipos, mantendo a regra de contraste.
 
 ### 5.2 Logo
-- Adaptar `logo.png` e `logo-small.png` para o roxo pastel: fundo lavanda (`#C5B3F0` → `#A98FE6`), com o ícone e o texto em `#2E2152`, ou em branco se o contraste for suficiente.
-- Ter uma versão para o tema escuro, se necessário.
-- Essa adaptação é feita no item **F2** do backlog.
+- **Decidido em 15/10/2026 — opção A (texto escuro):** fundo lavanda chapado `#C5B3F0`, ícone e "Study" em `#2E2152`, "Organizer" em `#5B3FA3` (contraste ~7:1). Sem degradê.
+- Ícone do app (menu lateral e favicon): quadrado arredondado `#C5B3F0` com o livro em `#2E2152`; funciona nos dois temas.
+- Adaptar `logo.png` e `logo-small.png` (e o `favicon.svg`) no item **F2** do backlog, seguindo o quadro "Logo — opção A" dos protótipos.
 
-### 5.3 Demais diretrizes
+### 5.3 Protótipos
+- Canvas navegável (privado): https://claude.ai/artifact/HsfGnPG5K6cnYTuWJz8Kvp — telas em claro/escuro, janelas modais (disciplina, tópico, sessão, exclusões), versões de celular, primeiro acesso, paleta e logo.
+- Os protótipos são a referência visual da implementação; em caso de divergência com este documento, as regras deste documento prevalecem.
+
+### 5.4 Demais diretrizes
 - **Fonte:** Inter (pesos 400, 500, 600 e 700).
 - **Componentes:** shadcn/ui (Dialog, AlertDialog, Tabs, DropdownMenu, Checkbox, Button, Input, Textarea, Card, Progress, Skeleton, Chart) com o tema pastel aplicado.
 - **Ícones:** lucide-react.
@@ -206,6 +238,7 @@ O roxo do logo é adaptado para um **roxo pastel (lavanda)**. As cores de status
 | Erros da API | Interceptor do Axios lê o `message` (400) e transforma em aviso; 404 vira "não encontrado" | Depende das correções do backend B3 |
 | Testes | **Vitest** para as funções de `lib/` e para os schemas | Cobre as regras de maior risco (datas, durações, sobreposição) |
 | Atalho de import | `@/` → `src/` | Exigido pelo shadcn/ui |
+| Autenticação | JWT em cookie `HttpOnly`/`SameSite=Strict` emitido pela API; `AuthContext` com o usuário de `GET /api/Auth/me`; componente `RotaProtegida` | O token fica inacessível a scripts (proteção contra XSS); o proxy do Vite mantém front e API na mesma origem, então o cookie funciona sem CORS |
 
 **Estrutura de pastas**
 ```text
@@ -233,6 +266,11 @@ client/src/
 
 | Método | Rota | Payload | Resposta |
 |---|---|---|---|
+| GET | `/api/Auth/status` *(pública)* | — | `{ registrationOpen }` |
+| POST | `/api/Auth/register` *(pública)* | `{ name, email, password }` | 200 `{ id, name, email }` + cookie · 400 `{ message }` (validação ou cadastro fechado) · 429 |
+| POST | `/api/Auth/login` *(pública)* | `{ email, password, rememberMe }` | 200 `{ id, name, email }` + cookie · 401 `{ message }` · 429 |
+| POST | `/api/Auth/logout` *(pública)* | — | 204 (apaga o cookie) |
+| GET | `/api/Auth/me` | — | `{ id, name, email }` · 401 |
 | GET | `/api/Subject` | — | `Subject[]` = `{ id, name, description, createdAt }` |
 | GET | `/api/Subject/{id}` | — | `Subject` · **404** se não existir |
 | GET | `/api/Subject/{id}/progress` | — | `{ progress: { subjectName, totalTopics, totalTopicsCompleted, progress } }`, com `progress` de 0 a 100 (0 quando não há tópicos) |
@@ -280,7 +318,7 @@ client/src/
 - Edição de sessão (exige endpoint novo).
 - Busca e ordenação na lista de disciplinas.
 - Outros gráficos (tempo por disciplina, horas empilhadas por disciplina).
-- Login e multiusuário.
+- ~~Login e multiusuário~~ — login entrou no escopo em 26/10/2026 (seção 4.0); continuam fora: cadastro aberto a outras pessoas, recuperação de senha por e-mail, troca de senha e exclusão de conta.
 - Paginação no servidor.
 - CORS e configuração de deploy em produção.
 - Testes de componentes (Testing Library) e testes de ponta a ponta (Playwright).
@@ -288,27 +326,30 @@ client/src/
 ## 10. Em aberto
 
 - ~~**Formato de data da API**~~ — **resolvido em 13/10/2026:** o `AppDbContext` passou a gravar e ler todas as datas como UTC, e a API devolve ISO terminando em `Z`.
-- **Logo pastel:** decidir se o texto do logo fica escuro (`#2E2152`) ou branco, depois de testar o contraste nos protótipos.
-- **Ajuste fino da paleta:** validar os tons nos protótipos, principalmente no tema escuro.
+- ~~**Logo pastel**~~ — **resolvido em 15/10/2026:** opção A, texto escuro (seção 5.2).
+- ~~**Ajuste fino da paleta**~~ — **resolvido em 15/10/2026:** validada nos protótipos, com os ajustes de barra de progresso e borda de campos (seção 5.1).
 
 ## 11. Backlog priorizado
 
 | # | Item | Tamanho | Depende de |
 |---|---|---|---|
-| **B1** | Corrigir o parâmetro das rotas de sessão por disciplina (`SubjectId` → `id`) | P | — |
-| **B2** | Progresso devolve 0 quando não há tópicos | P | — |
-| **B3** | Tratamento de erros: 404 para item inexistente e 400 com `{ message }` nas validações (exceções próprias + middleware ou filtro) | M | — |
-| **B4** | `UpdateSubjectDTO` no PATCH de disciplina, usando o id da rota e checando nome duplicado | P | B3 |
-| **B5** | Validar `endTime > startTime` na criação de sessão | P | B3 |
-| **B6** | Renomear `subscription` → `description` (model, DTOs e migration) | M | — |
-| **B7** | Atualizar o README do backend com as rotas e os contratos reais | P | B1–B6 |
-| **D1** | Protótipos navegáveis das 3 telas (claro e escuro, desktop e mobile) com a paleta pastel | M | — (pode rodar junto com B1–B7) |
+| ✅ **B1** | Corrigir o parâmetro das rotas de sessão por disciplina (`SubjectId` → `id`) | P | — |
+| ✅ **B2** | Progresso devolve 0 quando não há tópicos | P | — |
+| ✅ **B3** | Tratamento de erros: 404 para item inexistente e 400 com `{ message }` nas validações (exceções próprias + middleware ou filtro) | M | — |
+| ✅ **B4** | `UpdateSubjectDTO` no PATCH de disciplina, usando o id da rota e checando nome duplicado | P | B3 |
+| ✅ **B5** | Validar `endTime > startTime` na criação de sessão | P | B3 |
+| ✅ **B6** | Renomear `subscription` → `description` (model, DTOs e migration) | M | — |
+| ✅ **B7** | Atualizar o README do backend com as rotas e os contratos reais | P | B1–B6 |
+| ✅ **B8** | Autenticação JWT (26/10/2026): usuário, cadastro só da primeira conta, login/logout/me, cookie `HttpOnly`, login obrigatório por padrão, limite de tentativas, dados isolados por usuário (migration `AddUsersAndSubjectOwner`), criação devolve DTOs | G | B3 |
+| ✅ ~~**D1**~~ | ~~Protótipos navegáveis das 3 telas (claro e escuro, desktop e mobile) com a paleta pastel~~ — concluído em 15/10/2026 (seção 5.3) | M | — |
 | **F1** | Fundação: proxy do Vite, atalho `@/`, shadcn/ui, fonte Inter, variáveis de cor pastel (claro e escuro), Toaster, QueryClient, Vitest configurado | M | — |
 | **F2** | Adaptar o logo (normal e pequeno) para o roxo pastel | P | D1 |
 | **F3** | Layout: menu lateral responsivo, botão de tema, rotas (`/`, `/disciplinas`, `/disciplinas/:id`, 404) | M | F1 |
-| **F4** | Camada de dados: `api.ts` com interceptor de erros, `types/`, services, hooks do TanStack Query, `lib/time.ts` (+ testes) | M | F1, B3, B6 |
+| **F4** | Camada de dados: `api.ts` com interceptor de erros (incluindo 401 → `/login`), `types/`, services, hooks do TanStack Query, `lib/time.ts` (+ testes) | M | F1, B3, B6 |
+| **F4a** | Autenticação no front: `authService`, `AuthContext` (`/me`), `RotaProtegida`, tela de carregamento inicial, Sair no menu lateral | M | F3, F4, B8 |
+| **F4b** | Telas `/login` e `/cadastro` (schemas Zod, mostrar/ocultar senha, "Lembrar de mim", tratamento de 401/429, redirecionamento pós-login) | M | F4a |
 | **F5** | Componentes compartilhados: EmptyState, ErrorState, ConfirmDialog, ProgressBar e selos de status | P | F1 |
-| **F6** | Lista de disciplinas: cards, blocos de carregamento, estado vazio | M | F3, F4, F5, B1, B2 |
+| **F6** | Lista de disciplinas: cards, blocos de carregamento, estado vazio | M | F3, F4, F4a, F5, B1, B2 |
 | **F7** | Criar, editar e excluir disciplina (janelas modais + schema Zod + confirmação com contagem) | M | F6, B4 |
 | **F8** | Detalhe da disciplina: cabeçalho e abas na URL; página "não encontrada" | P | F6 |
 | **F9** | Aba Tópicos: lista, filtro, criar/editar/excluir, marcar e desmarcar com mudança imediata | G | F8 |

@@ -9,4 +9,5 @@ public interface ISubjectRepository
     Task AddAsync(Subject subject);
     Task UpdateAsync(Subject subject);
     Task DeleteAsync(int id);
+    Task AssignOrphansToUserAsync(int userId);
 }

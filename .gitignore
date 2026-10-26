@@ -12,6 +12,7 @@ publish/
 *.db-shm
 *.db-wal
 *.db.bak
+backups/
 
 # Arquivos de usuário do Visual Studio / Rider
 .vs/

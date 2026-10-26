@@ -4,14 +4,17 @@ using Subject.Models;
 using Subject.Repositories.Interface;
 using StudyOrganizer.DTOs.Subjects;
 using StudyOrganizer.Exceptions;
+using Auth.Services;
 
 public class SubjectService
 {
     private readonly ISubjectRepository _repository;
+    private readonly ICurrentUserService _currentUser;
 
-    public SubjectService(ISubjectRepository repository)
+    public SubjectService(ISubjectRepository repository, ICurrentUserService currentUser)
     {
         _repository = repository;
+        _currentUser = currentUser;
     }
 
     public async Task<IEnumerable<ResponseSubjectDTO>> GetAllSubjectsAsync()
@@ -45,18 +48,26 @@ public class SubjectService
         return subjectDTO;
     }
 
-    public async Task<Subject> CreateSubjectAsync(CreateSubjectDTO dto)
+    public async Task<ResponseSubjectDTO> CreateSubjectAsync(CreateSubjectDTO dto)
     {
         var name = await ValidateNameAsync(dto.Name);
 
         var subject = new Subject
         {
             Name = name,
-            Description = dto.Description
+            Description = dto.Description,
+            UserId = _currentUser.UserId ?? throw new UnauthorizedException("Sua sessão expirou. Faça login novamente.")
         };
 
         await _repository.AddAsync(subject);
-        return subject;
+
+        return new ResponseSubjectDTO
+        {
+            Id = subject.Id,
+            Name = subject.Name,
+            Description = subject.Description,
+            CreatedAt = subject.CreatedAt
+        };
     }
 
     public async Task UpdateSubjectAsync(int id, UpdateSubjectDTO dto)

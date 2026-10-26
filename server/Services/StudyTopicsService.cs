@@ -80,7 +80,7 @@ public class StudyTopicsService
         return studyTopicDTO;
     }
 
-    public async Task<StudyTopics> CreateStudyTopicAsync(CreateStudyTopicsDTO dto)
+    public async Task<ResponseStudyTopicsDTO> CreateStudyTopicAsync(CreateStudyTopicsDTO dto)
     {
         var topic = new StudyTopics
         {
@@ -101,7 +101,15 @@ public class StudyTopicsService
         }
 
         await _repository.AddAsync(topic);
-        return topic;
+
+        return new ResponseStudyTopicsDTO
+        {
+            Id = topic.Id,
+            Title = topic.Title,
+            Description = topic.Description,
+            IsCompleted = topic.IsCompleted,
+            SubjectId = topic.SubjectId
+        };
     }
 
     public async Task UpdateTopicAsync(int id, UpdateStudyTopicDTO dto)

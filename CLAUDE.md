@@ -1,6 +1,6 @@
 # Study Organizer
 
-Aplicação web pessoal para organizar disciplinas de estudo, tópicos e sessões de estudo. Usuário único, sem login.
+Aplicação web pessoal para organizar disciplinas de estudo, tópicos e sessões de estudo. Login com JWT; uma única conta (o cadastro fecha depois da primeira).
 
 - `server/` — API REST em ASP.NET Core (.NET 10) + EF Core 8 + SQLite
 - `client/` — frontend em React 19 + Vite 8 + TypeScript + Tailwind CSS v4 (em desenvolvimento)
@@ -18,6 +18,7 @@ Aplicação web pessoal para organizar disciplinas de estudo, tópicos e sessõe
 ```bash
 # Backend (http://localhost:5071, Swagger em /swagger)
 cd server
+dotnet user-secrets set "Jwt:Key" "<chave aleatória ≥ 32 bytes>"   # só na primeira vez; sem ela a API não inicia
 dotnet build
 dotnet ef database update      # aplica migrations
 dotnet run --launch-profile http
@@ -40,6 +41,10 @@ Para testar a API manualmente: `server/SistemaDeDisciplinas.http` (REST Client d
 - **Erros:** nos services, lance `NotFoundException` (→ 404) ou `BusinessRuleException` (→ 400), de `server/Exceptions/`. O `ExceptionHandlingMiddleware` responde `{ "message": "..." }`. Não lance `Exception` genérica nem retorne null para "não encontrado".
 - **Datas:** sempre UTC; o `AppDbContext` converte todas as `DateTime` para UTC e a API devolve ISO com `Z`.
 - Excluir uma disciplina remove em cascata os tópicos e as sessões.
+- **Autenticação:** JWT em cookie `HttpOnly` `so_token` (`AuthController`, `AuthService`, `TokenService`). Todo endpoint exige login por padrão (`FallbackPolicy`); use `[AllowAnonymous]` só quando for intencional. Cadastro aberto apenas enquanto não existe nenhuma conta.
+- **Dados por usuário:** `Subject.UserId` + filtros globais no `AppDbContext` (`HasQueryFilter`) isolam disciplinas, tópicos e sessões do usuário logado — não filtre manualmente nos repositórios. Ao criar uma disciplina, preencha `UserId` com `ICurrentUserService.UserId`. `IgnoreQueryFilters()` só em casos explícitos (ex.: `AssignOrphansToUserAsync`).
+- Services devolvem `Response*DTO`, nunca entidades (evita expor `UserId` e navegações).
+- **Testes manuais que criam conta:** nunca no `study.db` real (a primeira conta adota os dados e fecha o cadastro). Copie o banco e rode com `ConnectionStrings__Default="Data Source=<cópia>"`.
 - Migrations: `dotnet ef migrations add <Nome>` e revise o arquivo gerado (prefira `RenameColumn` a drop/add para não perder dados).
 - Sem CORS configurado: em desenvolvimento o frontend usa o proxy do Vite.
 
@@ -47,7 +52,8 @@ Para testar a API manualmente: `server/SistemaDeDisciplinas.http` (REST Client d
 
 Decisões já tomadas no refinamento (detalhes em `docs/refinamento/frontend-escopo.md`):
 
-- Rotas: `/` (dashboard), `/disciplinas`, `/disciplinas/:id` (abas Tópicos/Sessões) com React Router 7.
+- Rotas: `/login`, `/cadastro` (públicas) e, protegidas, `/` (dashboard), `/disciplinas`, `/disciplinas/:id` (abas Tópicos/Sessões) com React Router 7.
+- Auth: o token nunca passa pelo JavaScript (cookie `HttpOnly`); o front descobre o usuário com `GET /api/Auth/me` e, em qualquer 401, limpa o estado e manda para `/login`.
 - Dados: Axios (`services/`, `baseURL: '/api'`) + TanStack Query (`hooks/`); proxy do Vite `/api` → `http://localhost:5071`.
 - Formulários: React Hook Form + Zod (`schemas/`); tipos escritos à mão em `types/`.
 - UI: shadcn/ui + lucide-react + react-hot-toast; fonte Inter; gráfico com shadcn Chart (Recharts).

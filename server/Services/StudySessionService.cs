@@ -56,7 +56,7 @@ public class StudySessionService
         return await _repository.GetTotalStudyTimeBySubjectAsync(SubjectId);
     }
 
-    public async Task<StudySession> CreateStudySession(CreateStudySessionDTO dto)
+    public async Task<ResponseStudySessionDTO> CreateStudySession(CreateStudySessionDTO dto)
     {
         if (dto.EndTime <= dto.StartTime)
             throw new BusinessRuleException("O horário de fim deve ser posterior ao horário de início.");
@@ -74,7 +74,14 @@ public class StudySessionService
 
         await _repository.AddAsync(session);
 
-        return session;
+        return new ResponseStudySessionDTO
+        {
+            Id = session.Id,
+            StartTime = session.StartTime,
+            EndTime = session.EndTime,
+            Duration = session.Duration,
+            SubjectId = session.SubjectId
+        };
     }
 
     public async Task DeleteStudySessionAsync(int id)

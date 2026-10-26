@@ -28,6 +28,10 @@ public class ExceptionHandlingMiddleware
         {
             await WriteErrorAsync(context, StatusCodes.Status400BadRequest, ex.Message);
         }
+        catch (UnauthorizedException ex)
+        {
+            await WriteErrorAsync(context, StatusCodes.Status401Unauthorized, ex.Message);
+        }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Erro não tratado ao processar {Method} {Path}", context.Request.Method, context.Request.Path);

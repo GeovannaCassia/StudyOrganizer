@@ -6,6 +6,42 @@
 @topicId = 1
 @sessionId = 1
 
+# Os demais endpoints exigem login: rode "Entrar" primeiro.
+# O REST Client guarda o cookie so_token e o envia nas próximas requisições.
+
+### ===== Autenticação =====
+
+### Status do cadastro (público)
+GET {{api}}/Auth/status
+Accept: application/json
+
+### Criar conta (só funciona enquanto não existe nenhuma conta)
+POST {{api}}/Auth/register
+Content-Type: application/json
+
+{
+  "name": "Seu nome",
+  "email": "voce@exemplo.com",
+  "password": "troque1234"
+}
+
+### Entrar
+POST {{api}}/Auth/login
+Content-Type: application/json
+
+{
+  "email": "voce@exemplo.com",
+  "password": "troque1234",
+  "rememberMe": false
+}
+
+### Usuário logado
+GET {{api}}/Auth/me
+Accept: application/json
+
+### Sair
+POST {{api}}/Auth/logout
+
 ### ===== Disciplinas =====
 
 ### Listar disciplinas

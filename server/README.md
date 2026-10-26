@@ -38,19 +38,27 @@ cd SistemaDeDisciplinas
 dotnet restore
 ```
 
-### 3. Executar Migrations (Criar Banco de Dados)
+### 3. Configurar a chave do JWT
+A API não inicia sem uma chave secreta de pelo menos 32 bytes. Em desenvolvimento ela fica no *user-secrets* (fora do repositório):
+```bash
+dotnet user-secrets set "Jwt:Key" "<uma chave aleatória longa>"
+# ex.: gerar com  openssl rand -base64 48
+```
+Em produção, defina a variável de ambiente `Jwt__Key`.
+
+### 4. Executar Migrations (Criar Banco de Dados)
 ```bash
 dotnet ef database update
 ```
 
-### 4. Executar a Aplicação
+### 5. Executar a Aplicação
 ```bash
 dotnet run
 ```
 
 A aplicação estará disponível em `http://localhost:5071` (perfil `http`) ou `https://localhost:7268` (perfil `https`), conforme `Properties/launchSettings.json`.
 
-### 5. Acessar a Documentação Swagger
+### 6. Acessar a Documentação Swagger
 Abra seu navegador e acesse:
 ```
 http://localhost:5071/swagger
@@ -129,6 +137,19 @@ public class StudySession
 
 ## 🔌 Endpoints da API
 
+> Todos os endpoints exigem login, exceto os marcados como **público**. Cada usuário só enxerga as próprias disciplinas, tópicos e sessões.
+
+### Autenticação (Auth)
+- `GET /api/Auth/status` - **público** - Indica se o cadastro está aberto (`{ registrationOpen }`)
+- `POST /api/Auth/register` - **público** - Cria a conta (`{ name, email, password }`). Só funciona enquanto não existe nenhuma conta; a primeira conta assume as disciplinas criadas antes do login existir
+- `POST /api/Auth/login` - **público** - Entra (`{ email, password, rememberMe }`)
+- `POST /api/Auth/logout` - **público** - Sai (apaga o cookie)
+- `GET /api/Auth/me` - Dados do usuário logado (`{ id, name, email }`)
+
+O login devolve o token JWT num cookie `so_token` (`HttpOnly`, `SameSite=Strict`, `Secure` fora do desenvolvimento), que o navegador envia sozinho nas próximas requisições. A sessão dura 8 horas, ou 30 dias com `rememberMe`. O header `Authorization: Bearer <token>` também é aceito. Login e cadastro aceitam no máximo 5 tentativas por minuto por IP.
+
+Regras do cadastro: nome obrigatório (até 80 caracteres), e-mail válido, senha com 8 a 128 caracteres contendo letras e números.
+
 ### Disciplinas (Subject)
 - `GET /api/Subject` - Listar todas as disciplinas
 - `GET /api/Subject/{id}` - Obter disciplina por ID
@@ -159,6 +180,8 @@ public class StudySession
 Os erros da aplicação são devolvidos no formato `{ "message": "..." }`:
 - `404 Not Found` - recurso inexistente (ex.: `"Disciplina não encontrada."`)
 - `400 Bad Request` - regra de negócio violada (ex.: `"Já existe uma disciplina com esse nome."`, `"O horário de fim deve ser posterior ao horário de início."`)
+- `401 Unauthorized` - não logado, sessão expirada ou credenciais inválidas (`"E-mail ou senha inválidos."`)
+- `429 Too Many Requests` - limite de tentativas de login/cadastro atingido
 - `500 Internal Server Error` - erro inesperado (detalhes apenas no log do servidor)
 
 ### Datas
@@ -177,7 +200,8 @@ As migrações do Entity Framework estão em `Migrations/`:
 - `Version1.0` - Primeira versão estável
 - `Version2.0` - Melhorias na estrutura
 - `Version3.0` - Ajustes de estrutura
-- `RenameSubscriptionToDescription` - Renomeia o campo `Subscription` da disciplina para `Description` (versão atual)
+- `RenameSubscriptionToDescription` - Renomeia o campo `Subscription` da disciplina para `Description`
+- `AddUsersAndSubjectOwner` - Cria a tabela `Users` e a coluna `Subject.UserId` (dono da disciplina) (versão atual)
 
 ## 🔐 Segurança
 
@@ -185,6 +209,11 @@ A aplicação implementa:
 - HTTPS redirection (segurança em trânsito)
 - Entity Framework Core (proteção contra SQL Injection)
 - Validações de regras de negócio nos services, com respostas de erro padronizadas
+- Autenticação JWT em cookie `HttpOnly` (inacessível ao JavaScript da página) e login obrigatório por padrão em todos os endpoints
+- Senhas guardadas com hash PBKDF2 com salt (`PasswordHasher` do ASP.NET Core Identity)
+- Isolamento de dados por usuário com filtros globais do EF Core
+- Limite de tentativas de login e mensagem genérica de erro (não revela se o e-mail existe)
+- Chave do JWT fora do repositório (user-secrets / variável de ambiente)
 
 ## 📝 Como Usar
 

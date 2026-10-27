@@ -29,6 +29,7 @@ npm install
 npm run dev
 npm run build                  # tsc -b + vite build
 npm run lint
+npm test                       # Vitest (src/**/*.test.ts)
 ```
 
 Para testar a API manualmente: `server/SistemaDeDisciplinas.http` (REST Client do VS Code) ou o Swagger.

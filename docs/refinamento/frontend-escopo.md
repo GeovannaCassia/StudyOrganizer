@@ -342,8 +342,8 @@ client/src/
 | ✅ **B7** | Atualizar o README do backend com as rotas e os contratos reais | P | B1–B6 |
 | ✅ **B8** | Autenticação JWT (26/10/2026): usuário, cadastro só da primeira conta, login/logout/me, cookie `HttpOnly`, login obrigatório por padrão, limite de tentativas, dados isolados por usuário (migration `AddUsersAndSubjectOwner`), criação devolve DTOs | G | B3 |
 | ✅ ~~**D1**~~ | ~~Protótipos navegáveis das 3 telas (claro e escuro, desktop e mobile) com a paleta pastel~~ — concluído em 15/10/2026 (seção 5.3) | M | — |
-| **F1** | Fundação: proxy do Vite, atalho `@/`, shadcn/ui, fonte Inter, variáveis de cor pastel (claro e escuro), Toaster, QueryClient, Vitest configurado | M | — |
-| **F2** | Adaptar o logo (normal e pequeno) para o roxo pastel | P | D1 |
+| ✅ **F1** | Fundação: proxy do Vite, atalho `@/`, shadcn/ui, fonte Inter, variáveis de cor pastel (claro e escuro), Toaster, QueryClient, Vitest configurado — concluído em 27/10/2026 | M | — |
+| ✅ **F2** | Adaptar o logo (normal e pequeno) para o roxo pastel — concluído em 27/10/2026: componente `components/brand/Logo.tsx` (`Logo` e `AppIcon`) e `public/favicon.svg` | P | D1 |
 | **F3** | Layout: menu lateral responsivo, botão de tema, rotas (`/`, `/disciplinas`, `/disciplinas/:id`, 404) | M | F1 |
 | **F4** | Camada de dados: `api.ts` com interceptor de erros (incluindo 401 → `/login`), `types/`, services, hooks do TanStack Query, `lib/time.ts` (+ testes) | M | F1, B3, B6 |
 | **F4a** | Autenticação no front: `authService`, `AuthContext` (`/me`), `RotaProtegida`, tela de carregamento inicial, Sair no menu lateral | M | F3, F4, B8 |

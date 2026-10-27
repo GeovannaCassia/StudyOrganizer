@@ -1,10 +1,19 @@
 <!doctype html>
-<html lang="en">
+<html lang="pt-BR">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>studyorganizer</title>
+    <title>Study Organizer</title>
+    <script>
+      // Aplica o tema antes de pintar a página (evita piscar o tema claro). Sem escolha salva, segue o sistema.
+      (function () {
+        var tema = null;
+        try { tema = localStorage.getItem('so-tema'); } catch (e) {}
+        var escuro = tema ? tema === 'escuro' : window.matchMedia('(prefers-color-scheme: dark)').matches;
+        document.documentElement.classList.toggle('dark', escuro);
+      })();
+    </script>
   </head>
   <body>
     <div id="root"></div>

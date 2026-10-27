@@ -351,8 +351,8 @@ client/src/
 | ✅ **F5** | Componentes compartilhados: EmptyState, ErrorState, ConfirmDialog, ProgressBar e selos de status — concluído em 27/10/2026 | P | F1 |
 | ✅ **F6** | Lista de disciplinas: cards, blocos de carregamento, estado vazio — concluído em 27/10/2026 | M | F3, F4, F4a, F5, B1, B2 |
 | ✅ **F7** | Criar, editar e excluir disciplina (janelas modais + schema Zod + confirmação com contagem) — concluído em 27/10/2026; `SubjectFormDialog` e `DeleteSubjectDialog` ficam em `components/subjects/` para o detalhe (F8) e o dashboard (F12) reaproveitarem | M | F6, B4 |
-| **F8** | Detalhe da disciplina: cabeçalho e abas na URL; página "não encontrada" | P | F6 |
-| **F9** | Aba Tópicos: lista, filtro, criar/editar/excluir, marcar e desmarcar com mudança imediata | G | F8 |
+| ✅ **F8** | Detalhe da disciplina: cabeçalho e abas na URL; página "não encontrada" — concluído em 27/10/2026 | P | F6 |
+| ✅ **F9** | Aba Tópicos: lista, filtro, criar/editar/excluir, marcar e desmarcar com mudança imediata — concluído em 27/10/2026; marcar usa atualização otimista (`useToggleTopic`) e desfaz só o tópico que falhou | G | F8 |
 | **F10** | Aba Sessões: lista com "ver mais", total, exclusão | M | F8, B1 |
 | **F11** | Registrar sessão: formulário, meia-noite, validações, aviso de sobreposição, conversão para UTC (+ testes) | G | F10, B5 |
 | **F12** | Dashboard: cards de resumo (incluindo a semana), progresso por disciplina, sessões recentes, primeiro acesso (+ testes dos cálculos) | M | F4, F5 |

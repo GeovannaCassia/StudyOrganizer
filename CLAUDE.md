@@ -63,4 +63,4 @@ Decisões já tomadas no refinamento (detalhes em `docs/refinamento/frontend-esc
 - Testes: Vitest para as regras em `lib/` e `schemas/`.
 - Formulários de criar/editar sempre em modal; estados de loading (skeleton), vazio e erro em todas as listas.
 - Erros: o interceptor do `services/api.ts` transforma toda falha em `ApiError` (mensagem pronta em português). Mutations mostram toast de erro automaticamente (`MutationCache`), exceto com `meta: { skipErrorToast: true }`, usado quando o formulário mostra o erro; consultas mostram `ErrorState`.
-- Cache: chaves em `hooks/queryKeys.ts`, hierárquicas (invalidar `['subjects']` atualiza lista, detalhe e progresso; `['sessions']` atualiza listas e totais).
+- Cache: chaves em `hooks/queryKeys.ts`, hierárquicas (invalidar `['subjects']` atualiza lista, detalhe e progresso; `['sessions']` atualiza listas e totais). Marcar/desmarcar tópico é otimista (`useToggleTopic`): muda a lista e o progresso no cache na hora e, se a API falhar, desfaz só aquele tópico.

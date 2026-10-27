@@ -355,6 +355,6 @@ client/src/
 | ✅ **F9** | Aba Tópicos: lista, filtro, criar/editar/excluir, marcar e desmarcar com mudança imediata — concluído em 27/10/2026; marcar usa atualização otimista (`useToggleTopic`) e desfaz só o tópico que falhou | G | F8 |
 | ✅ **F10** | Aba Sessões: lista com "ver mais", total, exclusão — concluído em 27/10/2026; a duração de cada sessão é calculada pelo início e fim (`sessionMinutes`), porque sessões antigas do banco têm o campo `duration` zerado | M | F8, B1 |
 | ✅ **F11** | Registrar sessão: formulário, meia-noite, validações, aviso de sobreposição, conversão para UTC (+ testes) — concluído em 27/10/2026 (`lib/sessions.ts`, `schemas/sessionSchema.ts`) | G | F10, B5 |
-| **F12** | Dashboard: cards de resumo (incluindo a semana), progresso por disciplina, sessões recentes, primeiro acesso (+ testes dos cálculos) | M | F4, F5 |
-| **F13** | Gráfico dos últimos 7 dias (shadcn Chart) | M | F12 |
+| ✅ **F12** | Dashboard: cards de resumo (incluindo a semana), progresso por disciplina, sessões recentes, primeiro acesso (+ testes dos cálculos) — concluído em 27/10/2026 (`lib/dashboard.ts`) | M | F4, F5 |
+| ✅ **F13** | Gráfico dos últimos 7 dias (shadcn Chart) — concluído em 27/10/2026; cores dos eixos passadas direto ao Recharts 3 (o seletor do `chart.tsx` não as aplica) | M | F12 |
 | **F14** | Revisão final: acessibilidade, responsividade, tema escuro, textos | P | F6–F13 |

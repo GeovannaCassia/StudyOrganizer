@@ -346,11 +346,11 @@ client/src/
 | ✅ **F2** | Adaptar o logo (normal e pequeno) para o roxo pastel — concluído em 27/10/2026: componente `components/brand/Logo.tsx` (`Logo` e `AppIcon`) e `public/favicon.svg` | P | D1 |
 | ✅ **F3** | Layout: menu lateral responsivo, botão de tema, rotas (`/`, `/disciplinas`, `/disciplinas/:id`, 404) — concluído em 27/10/2026 | M | F1 |
 | ✅ **F4** | Camada de dados: `api.ts` com interceptor de erros (incluindo 401 → `/login`), `types/`, services, hooks do TanStack Query, `lib/time.ts` (+ testes) — concluído em 27/10/2026 (o redirecionamento do 401 é ligado pelo AuthContext na F4a) | M | F1, B3, B6 |
-| **F4a** | Autenticação no front: `authService`, `AuthContext` (`/me`), `RotaProtegida`, tela de carregamento inicial, Sair no menu lateral | M | F3, F4, B8 |
-| **F4b** | Telas `/login` e `/cadastro` (schemas Zod, mostrar/ocultar senha, "Lembrar de mim", tratamento de 401/429, redirecionamento pós-login) | M | F4a |
+| ✅ **F4a** | Autenticação no front: `authService`, `AuthContext` (`/me`), `RotaProtegida`, tela de carregamento inicial, Sair no menu lateral — concluído em 27/10/2026: o usuário fica no cache do TanStack Query (`useCurrentUser`); o `AuthProvider` liga o 401 ao fim da sessão; `RotaProtegida` e `RotaPublica` | M | F3, F4, B8 |
+| ✅ **F4b** | Telas `/login` e `/cadastro` (schemas Zod, mostrar/ocultar senha, "Lembrar de mim", tratamento de 401/429, redirecionamento pós-login) — concluído em 27/10/2026 | M | F4a |
 | ✅ **F5** | Componentes compartilhados: EmptyState, ErrorState, ConfirmDialog, ProgressBar e selos de status — concluído em 27/10/2026 | P | F1 |
-| **F6** | Lista de disciplinas: cards, blocos de carregamento, estado vazio | M | F3, F4, F4a, F5, B1, B2 |
-| **F7** | Criar, editar e excluir disciplina (janelas modais + schema Zod + confirmação com contagem) | M | F6, B4 |
+| ✅ **F6** | Lista de disciplinas: cards, blocos de carregamento, estado vazio — concluído em 27/10/2026 | M | F3, F4, F4a, F5, B1, B2 |
+| ✅ **F7** | Criar, editar e excluir disciplina (janelas modais + schema Zod + confirmação com contagem) — concluído em 27/10/2026; `SubjectFormDialog` e `DeleteSubjectDialog` ficam em `components/subjects/` para o detalhe (F8) e o dashboard (F12) reaproveitarem | M | F6, B4 |
 | **F8** | Detalhe da disciplina: cabeçalho e abas na URL; página "não encontrada" | P | F6 |
 | **F9** | Aba Tópicos: lista, filtro, criar/editar/excluir, marcar e desmarcar com mudança imediata | G | F8 |
 | **F10** | Aba Sessões: lista com "ver mais", total, exclusão | M | F8, B1 |

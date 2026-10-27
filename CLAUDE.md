@@ -45,7 +45,7 @@ Para testar a API manualmente: `server/SistemaDeDisciplinas.http` (REST Client d
 - **Autenticação:** JWT em cookie `HttpOnly` `so_token` (`AuthController`, `AuthService`, `TokenService`). Todo endpoint exige login por padrão (`FallbackPolicy`); use `[AllowAnonymous]` só quando for intencional. Cadastro aberto apenas enquanto não existe nenhuma conta.
 - **Dados por usuário:** `Subject.UserId` + filtros globais no `AppDbContext` (`HasQueryFilter`) isolam disciplinas, tópicos e sessões do usuário logado — não filtre manualmente nos repositórios. Ao criar uma disciplina, preencha `UserId` com `ICurrentUserService.UserId`. `IgnoreQueryFilters()` só em casos explícitos (ex.: `AssignOrphansToUserAsync`).
 - Services devolvem `Response*DTO`, nunca entidades (evita expor `UserId` e navegações).
-- **Testes manuais que criam conta:** nunca no `study.db` real (a primeira conta adota os dados e fecha o cadastro). Copie o banco e rode com `ConnectionStrings__Default="Data Source=<cópia>"`.
+- **Testes manuais que criam conta ou alteram dados:** nunca no `study.db` real (a primeira conta adota os dados e fecha o cadastro). Copie o banco e suba uma API de teste em outra porta, sem derrubar a da usuária: `ConnectionStrings__Default="Data Source=<cópia>" dotnet run --launch-profile http --urls http://localhost:5072`; no front, `API_PROXY_TARGET=http://localhost:5072 npx vite --port 5180`.
 - Migrations: `dotnet ef migrations add <Nome>` e revise o arquivo gerado (prefira `RenameColumn` a drop/add para não perder dados).
 - Sem CORS configurado: em desenvolvimento o frontend usa o proxy do Vite.
 
@@ -54,7 +54,7 @@ Para testar a API manualmente: `server/SistemaDeDisciplinas.http` (REST Client d
 Decisões já tomadas no refinamento (detalhes em `docs/refinamento/frontend-escopo.md`):
 
 - Rotas: `/login`, `/cadastro` (públicas) e, protegidas, `/` (dashboard), `/disciplinas`, `/disciplinas/:id` (abas Tópicos/Sessões) com React Router 7.
-- Auth: o token nunca passa pelo JavaScript (cookie `HttpOnly`); o front descobre o usuário com `GET /api/Auth/me` e, em qualquer 401, limpa o estado e manda para `/login`.
+- Auth: o token nunca passa pelo JavaScript (cookie `HttpOnly`). O usuário vem de `GET /api/Auth/me` e fica no cache do TanStack Query (`useCurrentUser` em `hooks/useAuth.ts`: `undefined` verificando, `null` sem sessão). `RotaProtegida` manda para `/login` (ou `/cadastro` se ainda não há conta) guardando a página de origem; `RotaPublica` devolve para ela depois do login. Qualquer 401 fora de `/Auth/*` limpa o cache e avisa "Sua sessão expirou" (`AuthProvider`). Entrar e sair apagam o cache de dados (chaves fora de `['auth']`).
 - Dados: Axios (`services/`, `baseURL: '/api'`) + TanStack Query (`hooks/`); proxy do Vite `/api` → `http://localhost:5071`.
 - Formulários: React Hook Form + Zod (`schemas/`); tipos escritos à mão em `types/`.
 - UI: shadcn/ui + lucide-react + react-hot-toast; fonte Inter; gráfico com shadcn Chart (Recharts).

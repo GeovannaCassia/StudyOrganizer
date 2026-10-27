@@ -1,6 +1,7 @@
-import { BookOpen, LayoutDashboard, Moon, Sun, type LucideIcon } from 'lucide-react';
+import { BookOpen, LayoutDashboard, LogOut, Moon, Sun, type LucideIcon } from 'lucide-react';
 import { Link, NavLink } from 'react-router-dom';
 import { AppIcon } from '@/components/brand/Logo';
+import { useCurrentUser, useLogout } from '@/hooks/useAuth';
 import { useTheme } from '@/hooks/useTheme';
 import { cn } from '@/lib/utils';
 
@@ -57,6 +58,34 @@ export function SidebarNav({ onNavigate }: { onNavigate?: () => void }) {
         <ThemeIcon aria-hidden="true" className="size-5" />
         {theme === 'escuro' ? 'Tema claro' : 'Tema escuro'}
       </button>
+
+      <SidebarUser />
     </nav>
+  );
+}
+
+/** Rodapé do menu: pessoa logada e botão Sair. */
+function SidebarUser() {
+  const { data: user } = useCurrentUser();
+  const logout = useLogout();
+
+  if (!user) return null;
+
+  return (
+    <div className="mt-2 flex items-center gap-2 border-t border-sidebar-border pt-4">
+      <div className="flex min-w-0 flex-1 flex-col px-1.5">
+        <span className="truncate text-sm font-semibold">{user.name}</span>
+        <span className="truncate text-xs opacity-80">{user.email}</span>
+      </div>
+      <button
+        type="button"
+        onClick={() => logout.mutate()}
+        disabled={logout.isPending}
+        className="flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground disabled:opacity-60"
+      >
+        <LogOut aria-hidden="true" className="size-4.5" />
+        {logout.isPending ? 'Saindo...' : 'Sair'}
+      </button>
+    </div>
   );
 }

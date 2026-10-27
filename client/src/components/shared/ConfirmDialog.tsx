@@ -1,3 +1,4 @@
+import { Trash2 } from 'lucide-react';
 import type { ReactNode } from 'react';
 import {
   AlertDialog,
@@ -7,6 +8,7 @@ import {
   AlertDialogDescription,
   AlertDialogFooter,
   AlertDialogHeader,
+  AlertDialogMedia,
   AlertDialogTitle,
 } from '@/components/ui/alert-dialog';
 
@@ -35,22 +37,29 @@ export function ConfirmDialog({
 }: ConfirmDialogProps) {
   return (
     <AlertDialog open={open} onOpenChange={(next) => !pending && onOpenChange(next)}>
-      <AlertDialogContent>
-        <AlertDialogHeader>
-          <AlertDialogTitle>{title}</AlertDialogTitle>
-          <AlertDialogDescription>{description}</AlertDialogDescription>
+      <AlertDialogContent className="gap-5 rounded-2xl p-6 sm:max-w-[460px]">
+        <AlertDialogHeader className="gap-2">
+          <AlertDialogMedia className="size-12 rounded-xl bg-danger text-danger-foreground">
+            <Trash2 aria-hidden="true" />
+          </AlertDialogMedia>
+          <AlertDialogTitle className="text-xl font-bold">{title}</AlertDialogTitle>
+          <AlertDialogDescription className="text-[15px] leading-relaxed">{description}</AlertDialogDescription>
         </AlertDialogHeader>
-        <AlertDialogFooter>
-          <AlertDialogCancel disabled={pending}>Cancelar</AlertDialogCancel>
+        <AlertDialogFooter className="-mx-6 -mb-6 rounded-b-2xl px-6 py-4">
+          <AlertDialogCancel disabled={pending} className="h-11 rounded-xl px-4 text-[15px] font-semibold">
+            Cancelar
+          </AlertDialogCancel>
           <AlertDialogAction
             variant="destructive"
             disabled={pending}
+            className="h-11 rounded-xl px-5 text-[15px] font-semibold"
             onClick={(event) => {
               // Mantém o diálogo aberto até a ação terminar
               event.preventDefault();
               onConfirm();
             }}
           >
+            <Trash2 aria-hidden="true" />
             {pending ? pendingLabel : confirmLabel}
           </AlertDialogAction>
         </AlertDialogFooter>

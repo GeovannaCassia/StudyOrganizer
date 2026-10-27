@@ -1,7 +1,6 @@
-import { ArrowLeft, CalendarClock, ListChecks, Timer } from 'lucide-react';
+import { ArrowLeft, ListChecks, Timer } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { EmptyState } from '@/components/shared/EmptyState';
 import { ErrorState } from '@/components/shared/ErrorState';
 import { DeleteSubjectDialog } from '@/components/subjects/DeleteSubjectDialog';
 import { SubjectFormDialog } from '@/components/subjects/SubjectFormDialog';
@@ -9,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { useSubject } from '@/hooks/useSubjects';
 import NotFound from '@/pages/NotFound/NotFound';
 import { isNotFoundError } from '@/services/api';
+import { SessionsTab } from './SessionsTab';
 import { SubjectHeader, SubjectHeaderSkeleton } from './SubjectHeader';
 import { TopicsTab } from './TopicsTab';
 
@@ -88,12 +88,7 @@ function SubjectDetailsContent({ id }: { id: number }) {
               <TopicsTab subjectId={id} />
             </TabsContent>
             <TabsContent value="sessoes">
-              {/* Aba Sessões na Fase 6 (F10) */}
-              <EmptyState
-                icon={CalendarClock}
-                title="Em construção"
-                description="O registro de sessões de estudo chega na próxima fase."
-              />
+              <SessionsTab subjectId={id} />
             </TabsContent>
           </Tabs>
 

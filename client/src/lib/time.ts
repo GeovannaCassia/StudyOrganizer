@@ -1,4 +1,4 @@
-import { format, parseISO } from 'date-fns';
+import { format, isValid, parse, parseISO } from 'date-fns';
 import { ptBR } from 'date-fns/locale';
 import type { IsoDate, TimeSpan } from '@/types/api';
 
@@ -42,4 +42,19 @@ export function formatDayMonth(date: IsoDate): string {
 /** Hora no horário local, 24h: "14:00". */
 export function formatTime(date: IsoDate): string {
   return format(parseISO(date), 'HH:mm', { locale: ptBR });
+}
+
+/** Formato do campo de data do formulário. */
+export const DATE_INPUT_FORMAT = 'dd/MM/yyyy';
+
+/** Data no formato do campo ("27/10/2026"), no horário local. */
+export function toDateInputValue(date: Date = new Date()): string {
+  return format(date, DATE_INPUT_FORMAT);
+}
+
+/** Lê a data do campo ("27/10/2026"); null se estiver incompleta ou não existir (ex.: 31/02). */
+export function parseDateInput(value: string): Date | null {
+  if (!/^\d{2}\/\d{2}\/\d{4}$/.test(value)) return null;
+  const date = parse(value, DATE_INPUT_FORMAT, new Date());
+  return isValid(date) ? date : null;
 }

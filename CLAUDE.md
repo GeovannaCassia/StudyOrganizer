@@ -59,7 +59,7 @@ Decisões já tomadas no refinamento (detalhes em `docs/refinamento/frontend-esc
 - Formulários: React Hook Form + Zod (`schemas/`); tipos escritos à mão em `types/`.
 - UI: shadcn/ui + lucide-react + react-hot-toast; fonte Inter; gráfico com shadcn Chart (Recharts).
 - Paleta **pastel** (lavanda como marca; verde/amarelo/vermelho pastel para confirmar/pendente/excluir), tema claro e escuro. Texto sobre fundo pastel usa sempre o tom escuro da mesma cor, nunca branco.
-- Datas: enviar em UTC, exibir no horário local com date-fns (`ptBR`). TimeSpan da API chega como texto `"hh:mm:ss"` / `"d.hh:mm:ss"`.
+- Datas: enviar em UTC, exibir no horário local com date-fns (`ptBR`). TimeSpan da API chega como texto `"hh:mm:ss"` / `"d.hh:mm:ss"`. A duração de uma sessão é calculada pelo início e fim (`sessionMinutes` em `lib/sessions.ts`): sessões antigas do banco têm o campo `duration` zerado. Nos formulários, use `DateInput` (dd/mm/aaaa + calendário pt-BR) e `TimeInput` (24h, hh:mm) de `components/shared/`, nunca `<input type="date|time">`: os nativos seguem o idioma do navegador (mm/dd/aaaa, AM/PM).
 - Testes: Vitest para as regras em `lib/` e `schemas/`.
 - Formulários de criar/editar sempre em modal; estados de loading (skeleton), vazio e erro em todas as listas.
 - Erros: o interceptor do `services/api.ts` transforma toda falha em `ApiError` (mensagem pronta em português). Mutations mostram toast de erro automaticamente (`MutationCache`), exceto com `meta: { skipErrorToast: true }`, usado quando o formulário mostra o erro; consultas mostram `ErrorState`.

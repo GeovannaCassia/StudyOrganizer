@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { formatDuration, parseTimeSpan } from './time';
+import { formatDuration, parseDateInput, parseTimeSpan, toDateInputValue } from './time';
 
 describe('parseTimeSpan', () => {
   it.each([
@@ -43,5 +43,19 @@ describe('formatDuration', () => {
   it('trata negativos e frações como zero ou minutos inteiros', () => {
     expect(formatDuration(-10)).toBe('0min');
     expect(formatDuration(89.9)).toBe('1h29');
+  });
+});
+
+describe('toDateInputValue / parseDateInput', () => {
+  it('usa a data local no formato dd/MM/yyyy', () => {
+    expect(toDateInputValue(new Date(2026, 9, 5, 23, 59))).toBe('05/10/2026');
+  });
+
+  it('lê a data do campo', () => {
+    expect(parseDateInput('05/10/2026')).toEqual(new Date(2026, 9, 5));
+  });
+
+  it.each(['', '05/10', '5/10/2026', '31/02/2026', '00/10/2026', '05/13/2026'])('rejeita "%s"', (value) => {
+    expect(parseDateInput(value)).toBeNull();
   });
 });

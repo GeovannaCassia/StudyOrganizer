@@ -250,7 +250,7 @@ client/src/
 ├── pages/
 │   ├── Dashboard/
 │   ├── Subjects/    # lista + componentes da tela
-│   ├── SubjectDetail/ # cabeçalho, TopicsTab, SessionsTab
+│   ├── SubjectDetails/ # cabeçalho, TopicsTab, SessionsTab
 │   └── NotFound/
 ├── services/        # api.ts (instância Axios), subjectService, topicService, sessionService
 ├── hooks/           # useSubjects, useSubjectProgress, useTopics, useSessions...
@@ -344,11 +344,11 @@ client/src/
 | ✅ ~~**D1**~~ | ~~Protótipos navegáveis das 3 telas (claro e escuro, desktop e mobile) com a paleta pastel~~ — concluído em 15/10/2026 (seção 5.3) | M | — |
 | ✅ **F1** | Fundação: proxy do Vite, atalho `@/`, shadcn/ui, fonte Inter, variáveis de cor pastel (claro e escuro), Toaster, QueryClient, Vitest configurado — concluído em 27/10/2026 | M | — |
 | ✅ **F2** | Adaptar o logo (normal e pequeno) para o roxo pastel — concluído em 27/10/2026: componente `components/brand/Logo.tsx` (`Logo` e `AppIcon`) e `public/favicon.svg` | P | D1 |
-| **F3** | Layout: menu lateral responsivo, botão de tema, rotas (`/`, `/disciplinas`, `/disciplinas/:id`, 404) | M | F1 |
-| **F4** | Camada de dados: `api.ts` com interceptor de erros (incluindo 401 → `/login`), `types/`, services, hooks do TanStack Query, `lib/time.ts` (+ testes) | M | F1, B3, B6 |
+| ✅ **F3** | Layout: menu lateral responsivo, botão de tema, rotas (`/`, `/disciplinas`, `/disciplinas/:id`, 404) — concluído em 27/10/2026 | M | F1 |
+| ✅ **F4** | Camada de dados: `api.ts` com interceptor de erros (incluindo 401 → `/login`), `types/`, services, hooks do TanStack Query, `lib/time.ts` (+ testes) — concluído em 27/10/2026 (o redirecionamento do 401 é ligado pelo AuthContext na F4a) | M | F1, B3, B6 |
 | **F4a** | Autenticação no front: `authService`, `AuthContext` (`/me`), `RotaProtegida`, tela de carregamento inicial, Sair no menu lateral | M | F3, F4, B8 |
 | **F4b** | Telas `/login` e `/cadastro` (schemas Zod, mostrar/ocultar senha, "Lembrar de mim", tratamento de 401/429, redirecionamento pós-login) | M | F4a |
-| **F5** | Componentes compartilhados: EmptyState, ErrorState, ConfirmDialog, ProgressBar e selos de status | P | F1 |
+| ✅ **F5** | Componentes compartilhados: EmptyState, ErrorState, ConfirmDialog, ProgressBar e selos de status — concluído em 27/10/2026 | P | F1 |
 | **F6** | Lista de disciplinas: cards, blocos de carregamento, estado vazio | M | F3, F4, F4a, F5, B1, B2 |
 | **F7** | Criar, editar e excluir disciplina (janelas modais + schema Zod + confirmação com contagem) | M | F6, B4 |
 | **F8** | Detalhe da disciplina: cabeçalho e abas na URL; página "não encontrada" | P | F6 |

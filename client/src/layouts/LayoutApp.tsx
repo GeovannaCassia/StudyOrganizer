@@ -1,16 +1,49 @@
+import { Menu } from 'lucide-react';
+import { useState } from 'react';
 import { Outlet } from 'react-router-dom';
-import { Logo } from '@/components/brand/Logo';
+import { Button } from '@/components/ui/button';
+import { Sheet, SheetContent, SheetDescription, SheetTitle } from '@/components/ui/sheet';
+import { SidebarBrand, SidebarNav } from './Sidebar';
 
-// Esqueleto provisório: o menu lateral responsivo e o botão de tema chegam na Fase 2 (F3).
 export function LayoutApp() {
+  const [menuOpen, setMenuOpen] = useState(false);
+  const closeMenu = () => setMenuOpen(false);
+
   return (
-    <div className="flex min-h-screen">
-      <aside className="w-64 shrink-0 border-r border-sidebar-border bg-sidebar p-4 text-sidebar-foreground">
-        <Logo />
+    <div className="flex min-h-svh flex-col md:flex-row">
+      {/* Desktop: menu lateral fixo */}
+      <aside className="sticky top-0 hidden h-svh w-64 shrink-0 flex-col gap-7 bg-sidebar px-4 py-7 text-sidebar-foreground md:flex">
+        <SidebarBrand />
+        <SidebarNav />
       </aside>
 
-      <main className="flex-1 overflow-auto p-6">
-        <Outlet />
+      {/* Celular: barra no topo com o botão que abre o menu */}
+      <header className="sticky top-0 z-30 flex items-center justify-between bg-sidebar px-4 py-3 text-sidebar-foreground md:hidden">
+        <SidebarBrand />
+        <Button
+          variant="ghost"
+          size="icon-lg"
+          aria-label="Abrir menu"
+          onClick={() => setMenuOpen(true)}
+          className="size-11 rounded-xl hover:bg-sidebar-accent"
+        >
+          <Menu className="size-6" />
+        </Button>
+      </header>
+
+      <Sheet open={menuOpen} onOpenChange={setMenuOpen}>
+        <SheetContent side="left" className="flex w-72 flex-col gap-7 bg-sidebar px-4 py-7 text-sidebar-foreground">
+          <SheetTitle className="sr-only">Menu</SheetTitle>
+          <SheetDescription className="sr-only">Navegação principal</SheetDescription>
+          <SidebarBrand onNavigate={closeMenu} />
+          <SidebarNav onNavigate={closeMenu} />
+        </SheetContent>
+      </Sheet>
+
+      <main className="min-w-0 flex-1 px-4 py-5 md:px-10 md:py-9">
+        <div className="mx-auto flex w-full max-w-[1160px] flex-col gap-6">
+          <Outlet />
+        </div>
       </main>
     </div>
   );

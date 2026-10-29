@@ -203,7 +203,7 @@ O roxo do logo é adaptado para um **roxo pastel (lavanda)**. As cores de status
 - Adaptar `logo.png` e `logo-small.png` (e o `favicon.svg`) no item **F2** do backlog, seguindo o quadro "Logo — opção A" dos protótipos.
 
 ### 5.3 Protótipos
-- Canvas navegável (privado): https://claude.ai/artifact/HsfGnPG5K6cnYTuWJz8Kvp — telas em claro/escuro, janelas modais (disciplina, tópico, sessão, exclusões), versões de celular, primeiro acesso, paleta e logo.
+- Telas em claro/escuro, janelas modais (disciplina, tópico, sessão, exclusões), versões de celular, primeiro acesso, paleta e logo.
 - Os protótipos são a referência visual da implementação; em caso de divergência com este documento, as regras deste documento prevalecem.
 
 ### 5.4 Demais diretrizes

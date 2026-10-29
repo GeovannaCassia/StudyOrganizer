@@ -2,6 +2,7 @@ import { SearchX } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { EmptyState } from '@/components/shared/EmptyState';
 import { Button } from '@/components/ui/button';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 interface NotFoundProps {
   title?: string;
@@ -16,9 +17,11 @@ export default function NotFound({
   backTo = '/',
   backLabel = 'Voltar ao Dashboard',
 }: NotFoundProps) {
+  useDocumentTitle(title);
   return (
     <EmptyState
       icon={SearchX}
+      headingLevel={1}
       title={title}
       description={description}
       action={

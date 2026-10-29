@@ -18,7 +18,8 @@ interface SubjectActionsMenuProps {
 /** Menu ⋮ de uma disciplina (Editar / Excluir). */
 export function SubjectActionsMenu({ subjectName, onEdit, onDelete, className }: SubjectActionsMenuProps) {
   return (
-    <DropdownMenu>
+    // modal={false}: o menu não esconde o resto da página do leitor de tela (o foco continua preso no menu enquanto aberto)
+    <DropdownMenu modal={false}>
       <DropdownMenuTrigger asChild>
         <Button
           variant="ghost"

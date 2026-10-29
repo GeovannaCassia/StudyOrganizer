@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils';
 
-// Logo opção A (seção 5.2 do escopo): fundo lavanda chapado, ícone e "Study" em #2E2152, "Organizer" em #5B3FA3.
+// Logo opção A (seção 5.2 do escopo): fundo lavanda chapado, ícone e "Study" em #2E2152, "Organizer" em #3B2A73
+// (#5B3FA3, o tom original, dava contraste 4,1:1 sobre o fundo — abaixo do mínimo AA de 4,5:1 para texto pequeno).
 
 function BookIcon({ className }: { className?: string }) {
   return (
@@ -50,7 +51,7 @@ export function Logo({ className }: { className?: string }) {
       <BookIcon className="size-6" />
       <span aria-hidden="true" className="flex flex-col leading-none">
         <span className="text-[15px] font-bold tracking-tight">Study</span>
-        <span className="text-[13px] font-semibold text-lavender-700">Organizer</span>
+        <span className="text-[13px] font-semibold text-lavender-800">Organizer</span>
       </span>
     </span>
   );

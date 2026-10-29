@@ -84,7 +84,7 @@ function SidebarUser() {
         className="flex min-h-11 shrink-0 items-center gap-2 rounded-xl px-3 text-sm font-medium transition-colors hover:bg-sidebar-accent hover:text-sidebar-accent-foreground disabled:opacity-60"
       >
         <LogOut aria-hidden="true" className="size-4.5" />
-        {logout.isPending ? 'Saindo...' : 'Sair'}
+        {logout.isPending ? 'Saindo…' : 'Sair'}
       </button>
     </div>
   );

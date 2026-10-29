@@ -1,5 +1,6 @@
 import type { ReactNode } from 'react';
 import { Logo } from '@/components/brand/Logo';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 interface LayoutAuthProps {
   title: string;
@@ -9,6 +10,8 @@ interface LayoutAuthProps {
 
 /** Cartão centralizado das telas públicas (login e cadastro), sem menu lateral. */
 export function LayoutAuth({ title, description, children }: LayoutAuthProps) {
+  useDocumentTitle(title);
+
   return (
     <main className="flex min-h-svh items-center justify-center bg-background px-4 py-10">
       <div className="flex w-full max-w-[420px] flex-col gap-6 rounded-2xl border bg-card p-6 shadow-sm sm:p-8">

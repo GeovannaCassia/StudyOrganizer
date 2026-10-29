@@ -90,7 +90,7 @@ export default function Register() {
           disabled={registerAccount.isPending}
           className="mt-1 h-11 rounded-xl text-[15px] font-semibold"
         >
-          {registerAccount.isPending ? 'Criando conta...' : 'Criar conta'}
+          {registerAccount.isPending ? 'Criando conta…' : 'Criar conta'}
         </Button>
       </form>
     </LayoutAuth>

@@ -19,7 +19,8 @@ export function WeekChart({ days }: { days: DayTotal[] }) {
   return (
     <>
       <ChartContainer config={chartConfig} aria-hidden="true" className="aspect-auto h-60 w-full">
-        <BarChart data={data} margin={{ top: 8, right: 4, left: -16, bottom: 0 }}>
+        {/* accessibilityLayer={false}: sem isso o Recharts 3 deixa o gráfico focável pelo teclado mesmo escondido */}
+        <BarChart accessibilityLayer={false} data={data} margin={{ top: 8, right: 4, left: -16, bottom: 0 }}>
           <CartesianGrid vertical={false} stroke="var(--border)" />
           <XAxis dataKey="label" tick={TICK} tickLine={false} axisLine={false} tickMargin={8} />
           <YAxis

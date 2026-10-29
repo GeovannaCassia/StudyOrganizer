@@ -149,7 +149,7 @@ function SessionFormContent({ subjectId, onDone }: { subjectId: number; onDone: 
           className="h-11 rounded-xl px-5 text-[15px] font-semibold"
         >
           <Check aria-hidden="true" />
-          {createSession.isPending ? 'Salvando...' : 'Salvar'}
+          {createSession.isPending ? 'Salvando…' : 'Salvar'}
         </Button>
       </DialogFooter>
     </form>

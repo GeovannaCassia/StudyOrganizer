@@ -198,7 +198,7 @@ O roxo do logo é adaptado para um **roxo pastel (lavanda)**. As cores de status
 - Os valores exatos podem ser ajustados nos protótipos, mantendo a regra de contraste.
 
 ### 5.2 Logo
-- **Decidido em 15/10/2026 — opção A (texto escuro):** fundo lavanda chapado `#C5B3F0`, ícone e "Study" em `#2E2152`, "Organizer" em `#5B3FA3` (contraste ~7:1). Sem degradê.
+- **Decidido em 15/10/2026 — opção A (texto escuro):** fundo lavanda chapado `#C5B3F0`, ícone e "Study" em `#2E2152`, "Organizer" em `#3B2A73` (ajustado em 28/10/2026: o `#5B3FA3` original dava só 4,1:1, abaixo do mínimo AA de 4,5:1 para texto pequeno). Sem degradê.
 - Ícone do app (menu lateral e favicon): quadrado arredondado `#C5B3F0` com o livro em `#2E2152`; funciona nos dois temas.
 - Adaptar `logo.png` e `logo-small.png` (e o `favicon.svg`) no item **F2** do backlog, seguindo o quadro "Logo — opção A" dos protótipos.
 
@@ -357,4 +357,4 @@ client/src/
 | ✅ **F11** | Registrar sessão: formulário, meia-noite, validações, aviso de sobreposição, conversão para UTC (+ testes) — concluído em 27/10/2026 (`lib/sessions.ts`, `schemas/sessionSchema.ts`) | G | F10, B5 |
 | ✅ **F12** | Dashboard: cards de resumo (incluindo a semana), progresso por disciplina, sessões recentes, primeiro acesso (+ testes dos cálculos) — concluído em 27/10/2026 (`lib/dashboard.ts`) | M | F4, F5 |
 | ✅ **F13** | Gráfico dos últimos 7 dias (shadcn Chart) — concluído em 27/10/2026; cores dos eixos passadas direto ao Recharts 3 (o seletor do `chart.tsx` não as aplica) | M | F12 |
-| **F14** | Revisão final: acessibilidade, responsividade, tema escuro, textos | P | F6–F13 |
+| ✅ **F14** | Revisão final: acessibilidade, responsividade, tema escuro, textos — concluído em 28/10/2026: axe-core (WCAG 2.1 AA) sem violações em todas as telas nos dois temas; título da aba por página, "Pular para o conteúdo" e foco no conteúdo ao navegar; páginas carregadas sob demanda; logos PNG antigos removidos | P | F6–F13 |

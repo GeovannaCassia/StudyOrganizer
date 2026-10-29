@@ -3,7 +3,7 @@
 Aplicação web pessoal para organizar disciplinas de estudo, tópicos e sessões de estudo. Login com JWT; uma única conta (o cadastro fecha depois da primeira).
 
 - `server/` — API REST em ASP.NET Core (.NET 10) + EF Core 8 + SQLite
-- `client/` — frontend em React 19 + Vite 8 + TypeScript + Tailwind CSS v4 (em desenvolvimento)
+- `client/` — frontend em React 19 + Vite 8 + TypeScript + Tailwind CSS v4
 - `docs/refinamento/frontend-escopo.md` — **escopo do frontend** (telas, regras, paleta, decisões técnicas e backlog). Consulte antes de implementar qualquer coisa no `client/`.
 
 ## Regras de trabalho
@@ -61,6 +61,8 @@ Decisões já tomadas no refinamento (detalhes em `docs/refinamento/frontend-esc
 - Paleta **pastel** (lavanda como marca; verde/amarelo/vermelho pastel para confirmar/pendente/excluir), tema claro e escuro. Texto sobre fundo pastel usa sempre o tom escuro da mesma cor, nunca branco.
 - Datas: enviar em UTC, exibir no horário local com date-fns (`ptBR`). TimeSpan da API chega como texto `"hh:mm:ss"` / `"d.hh:mm:ss"`. A duração de uma sessão é calculada pelo início e fim (`sessionMinutes` em `lib/sessions.ts`): sessões antigas do banco têm o campo `duration` zerado. Nos formulários, use `DateInput` (dd/mm/aaaa + calendário pt-BR) e `TimeInput` (24h, hh:mm) de `components/shared/`, nunca `<input type="date|time">`: os nativos seguem o idioma do navegador (mm/dd/aaaa, AM/PM).
 - Testes: Vitest para as regras em `lib/` e `schemas/`.
+- Páginas: cada uma é carregada sob demanda (`lazy` em `routes/router.tsx`) e define o título da aba com `useDocumentTitle`. O `LayoutApp` tem o link "Pular para o conteúdo" e leva o foco ao `<main>` ao trocar de página.
+- Acessibilidade: todo texto pequeno precisa de contraste ≥ 4,5:1 (WCAG AA); menus suspensos com `modal={false}` e gráficos do Recharts com `accessibilityLayer={false}` quando escondidos com `aria-hidden`.
 - Formulários de criar/editar sempre em modal; estados de loading (skeleton), vazio e erro em todas as listas.
 - Erros: o interceptor do `services/api.ts` transforma toda falha em `ApiError` (mensagem pronta em português). Mutations mostram toast de erro automaticamente (`MutationCache`), exceto com `meta: { skipErrorToast: true }`, usado quando o formulário mostra o erro; consultas mostram `ErrorState`.
 - Cache: chaves em `hooks/queryKeys.ts`, hierárquicas (invalidar `['subjects']` atualiza lista, detalhe e progresso; `['sessions']` atualiza listas e totais). Marcar/desmarcar tópico é otimista (`useToggleTopic`): muda a lista e o progresso no cache na hora e, se a API falhar, desfaz só aquele tópico.

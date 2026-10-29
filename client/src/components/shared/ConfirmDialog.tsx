@@ -32,7 +32,7 @@ export function ConfirmDialog({
   description,
   onConfirm,
   confirmLabel = 'Excluir',
-  pendingLabel = 'Excluindo...',
+  pendingLabel = 'Excluindo…',
   pending = false,
 }: ConfirmDialogProps) {
   return (

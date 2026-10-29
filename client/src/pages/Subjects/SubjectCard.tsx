@@ -58,7 +58,7 @@ export function SubjectCard({ subject, onEdit, onDelete }: SubjectCardProps) {
         </span>
       </div>
 
-      <span className="border-t pt-3 text-[13px] text-muted-foreground">criada em {formatDate(subject.createdAt)}</span>
+      <span className="border-t pt-3 text-[13px] text-muted-foreground">Criada em {formatDate(subject.createdAt)}</span>
     </article>
   );
 }

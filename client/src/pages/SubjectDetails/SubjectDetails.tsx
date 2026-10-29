@@ -11,6 +11,7 @@ import { isNotFoundError } from '@/services/api';
 import { SessionsTab } from './SessionsTab';
 import { SubjectHeader, SubjectHeaderSkeleton } from './SubjectHeader';
 import { TopicsTab } from './TopicsTab';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 type Tab = 'topicos' | 'sessoes';
 
@@ -34,6 +35,8 @@ export default function SubjectDetails() {
 
 function SubjectDetailsContent({ id }: { id: number }) {
   const subject = useSubject(id);
+  const notFound = subject.isError && isNotFoundError(subject.error);
+  useDocumentTitle(notFound ? 'Disciplina não encontrada' : (subject.data?.name ?? 'Disciplina'));
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const [editOpen, setEditOpen] = useState(false);
@@ -44,7 +47,7 @@ function SubjectDetailsContent({ id }: { id: number }) {
   const changeTab = (value: string) =>
     setSearchParams(value === 'sessoes' ? { aba: 'sessoes' } : {}, { replace: true });
 
-  if (subject.isError && isNotFoundError(subject.error)) return <SubjectNotFound />;
+  if (notFound) return <SubjectNotFound />;
 
   return (
     <div className="flex flex-col gap-6">

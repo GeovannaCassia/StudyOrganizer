@@ -20,6 +20,7 @@ import { formatDayMonth, formatDuration, formatTime } from '@/lib/time';
 import type { Subject } from '@/types/subject';
 import { Panel, StatCard } from './DashboardParts';
 import { WeekChart } from './WeekChart';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 function today() {
   const text = format(new Date(), "EEEE, d 'de' MMMM 'de' yyyy", { locale: ptBR });
@@ -27,6 +28,7 @@ function today() {
 }
 
 export default function Dashboard() {
+  useDocumentTitle('Dashboard');
   const subjects = useSubjects();
   const [formOpen, setFormOpen] = useState(false);
 

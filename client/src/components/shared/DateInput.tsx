@@ -53,7 +53,7 @@ export function DateInput({ value, onChange, max, id, ...props }: DateInputProps
           </PopoverTrigger>
         </div>
       </PopoverAnchor>
-      <PopoverContent align="start" className="w-auto rounded-xl p-1">
+      <PopoverContent align="start" aria-label="Calendário" className="w-auto rounded-xl p-1">
         <Calendar
           mode="single"
           locale={ptBR}

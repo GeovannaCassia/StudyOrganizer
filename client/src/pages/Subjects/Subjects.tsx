@@ -10,8 +10,10 @@ import { useSubjects } from '@/hooks/useSubjects';
 import { pluralize } from '@/lib/text';
 import type { Subject } from '@/types/subject';
 import { SubjectCard, SubjectCardSkeleton } from './SubjectCard';
+import { useDocumentTitle } from '@/hooks/useDocumentTitle';
 
 export default function Subjects() {
+  useDocumentTitle('Disciplinas');
   const subjects = useSubjects();
   const [formOpen, setFormOpen] = useState(false);
   const [editing, setEditing] = useState<Subject | null>(null);

@@ -126,7 +126,7 @@ function TopicFormContent({ subjectId, topic, onDone }: { subjectId: number; top
         </DialogClose>
         <Button type="submit" variant="success" disabled={pending} className="h-11 rounded-xl px-5 text-[15px] font-semibold">
           <Check aria-hidden="true" />
-          {pending ? 'Salvando...' : 'Salvar'}
+          {pending ? 'Salvando…' : 'Salvar'}
         </Button>
       </DialogFooter>
     </form>

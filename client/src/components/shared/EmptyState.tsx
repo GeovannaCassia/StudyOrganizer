@@ -8,10 +8,14 @@ interface EmptyStateProps {
   description?: ReactNode;
   /** Botão de ação, ex.: "Criar primeira disciplina". */
   action?: ReactNode;
+  /** h1 quando o estado ocupa a página inteira (ex.: "não encontrada"); h2 dentro de uma página. */
+  headingLevel?: 1 | 2;
   className?: string;
 }
 
-export function EmptyState({ icon: Icon, title, description, action, className }: EmptyStateProps) {
+export function EmptyState({ icon: Icon, title, description, action, headingLevel = 2, className }: EmptyStateProps) {
+  const Heading = headingLevel === 1 ? 'h1' : 'h2';
+
   return (
     <section
       className={cn(
@@ -22,7 +26,7 @@ export function EmptyState({ icon: Icon, title, description, action, className }
       <span className="inline-flex size-16 items-center justify-center rounded-2xl bg-primary text-primary-foreground">
         <Icon aria-hidden="true" className="size-8" strokeWidth={1.8} />
       </span>
-      <h2 className="text-xl font-bold">{title}</h2>
+      <Heading className="text-xl font-bold">{title}</Heading>
       {description && <p className="max-w-md text-[15px] leading-relaxed text-muted-foreground">{description}</p>}
       {action}
     </section>

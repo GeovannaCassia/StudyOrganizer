@@ -35,7 +35,7 @@ export function ErrorState({
       {onRetry && (
         <Button variant="outline" size="lg" onClick={onRetry} disabled={retrying} className="mt-1 min-h-11 px-4">
           <RotateCw aria-hidden="true" className={cn(retrying && 'animate-spin')} />
-          {retrying ? 'Tentando...' : 'Tentar novamente'}
+          {retrying ? 'Tentando…' : 'Tentar novamente'}
         </Button>
       )}
     </section>

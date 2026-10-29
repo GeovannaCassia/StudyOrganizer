@@ -105,7 +105,7 @@ export default function Login() {
         />
 
         <Button type="submit" size="lg" disabled={busy} className="mt-1 h-11 rounded-xl text-[15px] font-semibold">
-          {login.isPending ? 'Entrando...' : cooldown.active ? `Aguarde ${cooldown.secondsLeft}s` : 'Entrar'}
+          {login.isPending ? 'Entrando…' : cooldown.active ? `Aguarde ${cooldown.secondsLeft}s` : 'Entrar'}
         </Button>
       </form>
 
